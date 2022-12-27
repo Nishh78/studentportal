@@ -9,7 +9,7 @@ const app = express();
 
 mongoose.set('strictQuery', false);
 // DB connection
-mongoose.connect(`${process.env.MONGO_URL}`, { useNewUrlParser: true, useUnifiedTopology: true }).then(() => {
+mongoose.connect(`${process.env.MONGO_DB}`, { useNewUrlParser: true, useUnifiedTopology: true }).then(() => {
 	//don't show the log when it is test
 	if (process.env.NODE_ENV !== "test") {
 		console.log("Connected");
