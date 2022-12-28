@@ -15,7 +15,7 @@ export default function App() {
       <ToastifyProvider>
       <ScrollToTop />
       <StyledChart />
-      <p>hello</p>
+      <Router />
       </ToastifyProvider>
     </ThemeProvider>
   );
