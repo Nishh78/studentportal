@@ -1,9 +1,13 @@
 import axios from "axios";
 import { BASEURL } from "src/utils/constant";
 
-export const apiClientAUth = axios
+export const apiClientAUth = axios.create({
+  baseURL: 'https://student-portal-gfu6.onrender.com/api/v1'
+});
 
-const apiClient = axios
+const apiClient = axios.create({
+  baseURL: 'https://student-portal-gfu6.onrender.com/api/v1'
+});
 
 apiClient.interceptors.request.use(async (config) => {
   config.headers["Access-Control-Allow-Origin"] = `*`;
@@ -20,6 +24,7 @@ apiClient.interceptors.response.use(
     return response.data;
   },
   function (error) {
+    console.log('error', error);
     if (error.response.status === 401) {
       //toast.error(USER_DISABLE_SHOW_ERROR_MSG);
     }
@@ -29,8 +34,7 @@ apiClient.interceptors.response.use(
 
 const getToken = () => {
   const user = JSON.parse(localStorage.getItem('user')) || null;
-  console.log('user',user.token);
-  return user.token;
+  return user?.token;
 };
 
 

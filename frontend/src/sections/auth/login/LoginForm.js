@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 // @mui
 import { Stack, IconButton, InputAdornment, TextField, CircularProgress, Typography } from '@mui/material';
@@ -10,6 +10,7 @@ import AuthServices from 'src/services/auth';
 import { useToastify } from 'src/hooks/useToastify';
 import { emailRegex, passwordRegex } from 'src/utils/constant';
 import { apiClientAUth } from 'src/services/api';
+import InchargeServices from 'src/services/incharge';
 
 
 // ----------------------------------------------------------------------
@@ -35,6 +36,18 @@ export default function LoginForm() {
   });
 
   const { handleSubmit, control, errors, reset } = methods;
+
+  const fetchData = async () => {
+    try {
+      const response = await InchargeServices.getAll();
+      console.log('response',response);
+      if (response.status == 200) {
+        // setInchargeList([...response.data])
+      }
+    } catch (error) {
+      console.log('error--@@', error);
+    }
+  };
 
   const onSubmit = async (data) => {
     setLoading(true);
@@ -70,6 +83,10 @@ export default function LoginForm() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchData();
+  },[])
 
   return (
     <>
