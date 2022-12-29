@@ -37,18 +37,6 @@ export default function LoginForm() {
 
   const { handleSubmit, control, errors, reset } = methods;
 
-  const fetchData = async () => {
-    try {
-      const response = await InchargeServices.getAll();
-      console.log('response',response);
-      if (response.status == 200) {
-        // setInchargeList([...response.data])
-      }
-    } catch (error) {
-      console.log('error--@@', error);
-    }
-  };
-
   const onSubmit = async (data) => {
     setLoading(true);
     try {
@@ -83,10 +71,6 @@ export default function LoginForm() {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    fetchData();
-  },[])
 
   return (
     <>

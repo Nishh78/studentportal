@@ -1,4 +1,5 @@
-export const BASEURL = "http://localhost:8000/api/v1";
+// export const BASEURL = "http://localhost:8000/api/v1";
+export const BASEURL = "https://student-portal-gfu6.onrender.com/api/v1";
 export const DATETIMEFORMAT = "DD/MM/YYYY hh:mm a";
 export const DATEFORMAT = "DD/MM/YYYY";
 export const SESSION_OPTIONS = [

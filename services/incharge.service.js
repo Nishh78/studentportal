@@ -22,6 +22,7 @@ const getBydId = async (_id) => {
 }
 
 const create = async (data) => {
+    data.role = "incharge";
     if (data.password) {
         const salt = await bcrypt.genSalt(10);
         const hashPassword = await bcrypt.hash(data.password, salt);
@@ -35,6 +36,11 @@ const create = async (data) => {
 }
 
 const update = async (data) => {
+    if (data.password) {
+        const salt = await bcrypt.genSalt(10);
+        const hashPassword = await bcrypt.hash(data.password, salt);
+        data.password = hashPassword;
+    }
     const updateIncharge = await User.findByIdAndUpdate(
         data._id || data.id,
         data

@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const validationSchema = Yup.object().shape({
-    marks: Yup.array().of(
+    generalMarks: Yup.array().of(
         Yup.object().shape({
             periodic_test: Yup.string().required("Periodic Test is required"),
             class_test: Yup.string().required("Class Test is required"),
@@ -132,7 +132,7 @@ const AddResult = () => {
                                     <div className={classes.container}>
                                         <Formik
                                             initialValues={{
-                                                marks: [
+                                                generalMarks: [
                                                     {
                                                         id: Math.random(),
                                                         subject: 'English',
@@ -214,10 +214,10 @@ const AddResult = () => {
                                         >
                                             {({ values, touched, errors, handleChange, handleBlur, isValid }) => (
                                                 <Form noValidate autoComplete="off">
-                                                    <FieldArray name="marks">
+                                                    <FieldArray name="generalMarks">
                                                         {({ push, remove }) => (
                                                             <div>
-                                                                {values.marks.map((p, index) => {
+                                                                {values.generalMarks.map((p, index) => {
                                                                     const subject = `marks[${index}].subject`;
 
                                                                     const periodicTest = `marks[${index}].periodic_test`;

@@ -2,11 +2,11 @@ import axios from "axios";
 import { BASEURL } from "src/utils/constant";
 
 export const apiClientAUth = axios.create({
-  baseURL: 'https://student-portal-gfu6.onrender.com/api/v1'
+  baseURL: BASEURL
 });
 
 const apiClient = axios.create({
-  baseURL: 'https://student-portal-gfu6.onrender.com/api/v1'
+  baseURL: BASEURL
 });
 
 apiClient.interceptors.request.use(async (config) => {
