@@ -1,6 +1,6 @@
 import httpStatus from "http-status";
 import { User } from "../models/index.js";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 

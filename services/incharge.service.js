@@ -1,5 +1,5 @@
 import httpStatus from "http-status";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import { User } from "../models/index.js";
 import mongoose from "mongoose";
 
