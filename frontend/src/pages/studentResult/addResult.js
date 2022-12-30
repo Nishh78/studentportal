@@ -19,6 +19,11 @@ import * as Yup from "yup";
 import { makeStyles } from "@mui/styles";
 import { styled } from '@material-ui/core/styles';
 import RemarkServices from "../../services/remark";
+import { useToastify } from 'src/hooks/useToastify';
+// import KeyboardDoubleArrowRightIcon from '@material-ui/icons/KeyboardDoubleArrowRight';
+import KeyboardArrowRightOutlined from "@material-ui/icons/KeyboardArrowRightOutlined";
+import StudentServices from 'src/services/student';
+
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -74,12 +79,114 @@ const validationForm4Schema = Yup.object({
 const debug = true;
 
 
-const AddResult = () => {
+const AddResult = ({
+    results,
+    handleMarksSubmit
+}) => {
 
     const classes = useStyles();
 
-    const [expanded, setExpanded] = React.useState(false);
+    const initialState = results !== null ? {
+        generalMarks: results?.generalMarks,
+        coScholasticArea: results?.coScholasticArea,
+        discipline: results?.discipline,
+        remarkId: results?.remarkId
+    } : null;
+
+    const [expanded, setExpanded] = useState(false);
     const [remarks, setRemarks] = useState([]);
+    const [marksInfo, setMarksInfo] = useState({
+        generalMarks: [
+            {
+                subject: 'English',
+                periodic_test: "",
+                class_test: "",
+                subject_activity: "",
+                march_exam: "",
+            },
+            {
+                subject: 'Hindi',
+                periodic_test: "",
+                class_test: "",
+                subject_activity: "",
+                march_exam: "",
+            },
+            // {
+            //     subject: 'Maths',
+            //     periodic_test: "",
+            //     class_test: "",
+            //     subject_activity: "",
+            //     march_exam: "",
+            // },
+            // {
+            //     subject: 'Science',
+            //     periodic_test: "",
+            //     class_test: "",
+            //     subject_activity: "",
+            //     march_exam: "",
+            // },
+            // {
+            //     subject: 'Social Studies',
+            //     periodic_test: "",
+            //     class_test: "",
+            //     subject_activity: "",
+            //     march_exam: "",
+            // },
+            // {
+            //     subject: 'Computer',
+            //     periodic_test: "",
+            //     class_test: "",
+            //     subject_activity: "",
+            //     march_exam: "",
+            // },
+            // {
+            //     subject: 'Punjabi',
+            //     periodic_test: "",
+            //     class_test: "",
+            //     subject_activity: "",
+            //     march_exam: "",
+            // },
+            // {
+            //     subject: 'Sanskrit',
+            //     periodic_test: "",
+            //     class_test: "",
+            //     subject_activity: "",
+            //     march_exam: "",
+            // },
+            // {
+            //     subject: 'General Knowledge',
+            //     periodic_test: "",
+            //     class_test: "",
+            //     subject_activity: "",
+            //     march_exam: "",
+            // },
+        ],
+        coScholasticArea: { work_education: '', art_education: '', health_education: '' },
+        discipline: { sincerity_regularity: '', values_behaiour: '', tidiness: '', rules_regulation: '' },
+        remarkId: ''
+    });
+
+    const [isFormValid, setIsFormValid] = useState({
+        form_1: false,
+        form_2: false,
+        form_3: false,
+        form_4: false
+    });
+
+    const setFormValidate = (form, isValid) => {
+        // console.log(form, isValid);
+        // setIsFormValid(prevState => ({
+        //     ...prevState,
+        //     [form]: isValid
+        // }))
+    }
+
+    const submitMarks = React.useCallback((key, values) => {
+        setMarksInfo(oldstate => ({
+            ...oldstate,
+            [key]: values
+        }))
+    }, [marksInfo])
 
     const handleChange = (panel) => (event, isExpanded) => {
         setExpanded(isExpanded ? panel : false);
@@ -90,12 +197,16 @@ const AddResult = () => {
     ))(({ theme }) => ({
         border: `1px solid ${theme.palette.divider}`,
         '&:not(:last-child)': {
-            borderBottom: 0,
+            // borderBottom: 0,
         },
         '&:before': {
             display: 'none',
         },
     }));
+    console.log('yess', marksInfo);
+    const handlePageSubmit = async () => {
+        await handleMarksSubmit(marksInfo)
+    }
 
     const fetchRemark = async () => {
         try {
@@ -108,136 +219,70 @@ const AddResult = () => {
         }
     }
 
+    // const isSubmitBtnDisables = React.useCallback(() => {
+    //     return isFormValid.form_1 && isFormValid.form_2 && isFormValid.form_3 && isFormValid.form_4;
+    // }, [isFormValid]);
+
+    // console.log('isFormValid', isSubmitBtnDisables());
     useEffect(() => {
         fetchRemark();
     }, [])
 
     return (
         <React.Fragment>
-                
-                <Accordion sx={{ background: expanded === 'panel1' && '#D1E9FC' }} expanded={true} onChange={handleChange('panel1')}>
-                    <AccordionSummary
-                        expandIcon={<ExpandMoreIcon />}
-                        aria-controls="panel1bh-content"
-                        id="panel1bh-header"
-                    >
-                        <Typography sx={{ width: '33%', flexShrink: 0 }}>
-                            General Marks
-                        </Typography>
-                    </AccordionSummary>
-                    <AccordionDetails>
-                        <div className={classes.root}>
-                            <Paper className={classes.paper} elevation={0} >
-                                <Box >
-                                    <div className={classes.container}>
-                                        <Formik
-                                            initialValues={{
-                                                generalMarks: [
-                                                    {
-                                                        id: Math.random(),
-                                                        subject: 'English',
-                                                        periodic_test: "",
-                                                        class_test: "",
-                                                        subject_activity: "",
-                                                        march_exam: "",
-                                                    },
-                                                    {
-                                                        id: Math.random(),
-                                                        subject: 'Hindi',
-                                                        periodic_test: "",
-                                                        class_test: "",
-                                                        subject_activity: "",
-                                                        march_exam: "",
-                                                    },
-                                                    {
-                                                        id: Math.random(),
-                                                        subject: 'Maths',
-                                                        periodic_test: "",
-                                                        class_test: "",
-                                                        subject_activity: "",
-                                                        march_exam: "",
-                                                    },
-                                                    {
-                                                        id: Math.random(),
-                                                        subject: 'Science',
-                                                        periodic_test: "",
-                                                        class_test: "",
-                                                        subject_activity: "",
-                                                        march_exam: "",
-                                                    },
-                                                    {
-                                                        id: Math.random(),
-                                                        subject: 'Social Studies',
-                                                        periodic_test: "",
-                                                        class_test: "",
-                                                        subject_activity: "",
-                                                        march_exam: "",
-                                                    },
-                                                    {
-                                                        id: Math.random(),
-                                                        subject: 'Computer',
-                                                        periodic_test: "",
-                                                        class_test: "",
-                                                        subject_activity: "",
-                                                        march_exam: "",
-                                                    },
-                                                    {
-                                                        id: Math.random(),
-                                                        subject: 'Punjabi',
-                                                        periodic_test: "",
-                                                        class_test: "",
-                                                        subject_activity: "",
-                                                        march_exam: "",
-                                                    },
-                                                    {
-                                                        id: Math.random(),
-                                                        subject: 'Sanskrit',
-                                                        periodic_test: "",
-                                                        class_test: "",
-                                                        subject_activity: "",
-                                                        march_exam: "",
-                                                    },
-                                                    {
-                                                        id: Math.random(),
-                                                        subject: 'General Knowledge',
-                                                        periodic_test: "",
-                                                        class_test: "",
-                                                        subject_activity: "",
-                                                        march_exam: "",
-                                                    },
-                                                ]
-                                            }}
-                                            validationSchema={validationSchema}
-                                            onSubmit={values => {
-                                                console.log("onSubmit", JSON.stringify(values, null, 2));
-                                            }}
-                                        >
-                                            {({ values, touched, errors, handleChange, handleBlur, isValid }) => (
+
+            <Accordion sx={{ background: expanded === 'panel1' && '#D1E9FC' }} expanded={true} onChange={handleChange('panel1')}>
+                <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    aria-controls="panel1bh-content"
+                    id="panel1bh-header"
+                >
+                    <Typography sx={{ width: '33%', flexShrink: 0 }}>
+                        General Marks*
+                    </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    <div className={classes.root}>
+                        <Paper className={classes.paper} elevation={0} >
+                            <Box >
+                                <div className={classes.container}>
+                                    <Formik
+                                        initialValues={{
+                                            generalMarks: marksInfo.generalMarks
+                                        }}
+                                        validationSchema={validationSchema}
+                                        onSubmit={values => {
+                                            submitMarks('generalMarks', values.generalMarks)
+                                        }}
+                                    >
+                                        {({ values, touched, errors, handleChange, handleBlur, isValid }) => {
+                                            setFormValidate('form_1', isValid)
+                                            return (
                                                 <Form noValidate autoComplete="off">
                                                     <FieldArray name="generalMarks">
                                                         {({ push, remove }) => (
                                                             <div>
                                                                 {values.generalMarks.map((p, index) => {
-                                                                    const subject = `marks[${index}].subject`;
+                                                                    const subject = `generalMarks[${index}].subject`;
 
-                                                                    const periodicTest = `marks[${index}].periodic_test`;
+                                                                    const periodicTest = `generalMarks[${index}].periodic_test`;
                                                                     const touchedperiodicTest = getIn(touched, periodicTest);
                                                                     const errorperiodicTest = getIn(errors, periodicTest);
 
-                                                                    const classTest = `marks[${index}].class_test`;
+                                                                    const classTest = `generalMarks[${index}].class_test`;
                                                                     const touchedclassTest = getIn(touched, classTest);
                                                                     const errorclassTest = getIn(errors, classTest);
 
-                                                                    const subjectActivity = `marks[${index}].subject_activity`;
+                                                                    const subjectActivity = `generalMarks[${index}].subject_activity`;
                                                                     const touchedsubjectActivity = getIn(touched, subjectActivity);
                                                                     const errorsubjectActivity = getIn(errors, subjectActivity);
 
-                                                                    const marchExam = `marks[${index}].march_exam`;
+                                                                    const marchExam = `generalMarks[${index}].march_exam`;
                                                                     const touchedmarchExam = getIn(touched, marchExam);
                                                                     const errormarchExam = getIn(errors, marchExam);
 
                                                                     return (
-                                                                        <div key={p.id}>
+                                                                        <div key={`generalForm_${index}`}>
                                                                             <TextField
                                                                                 className={classes.field}
                                                                                 margin="normal"
@@ -333,57 +378,42 @@ const AddResult = () => {
                                                         type="submit"
                                                         color="primary"
                                                         variant="contained"
-                                                    // disabled={!isValid || values.marks.length === 0}
+                                                        disabled={!isValid}
                                                     >
                                                         submit
                                                     </Button>
-                                                    {/* <Divider style={{ marginTop: 20, marginBottom: 20 }} />
-                                                    {debug && (
-                                                        <>
-                                                            <pre style={{ textAlign: "left" }}>
-                                                                <strong>Values</strong>
-                                                                <br />
-                                                                {JSON.stringify(values, null, 2)}
-                                                            </pre>
-                                                            <pre style={{ textAlign: "left" }}>
-                                                                <strong>Errors</strong>
-                                                                <br />
-                                                                {JSON.stringify(errors, null, 2)}
-                                                            </pre>
-                                                        </>
-                                                    )} */}
                                                 </Form>
-                                            )}
-                                        </Formik>
-                                    </div>
-                                </Box>
-                            </Paper>
-                        </div>
-                    </AccordionDetails>
-                </Accordion>
-                <Accordion sx={{ background: expanded === 'panel2' && '#D1E9FC' }} expanded={true} onChange={handleChange('panel2')}>
-                    <AccordionSummary
-                        expandIcon={<ExpandMoreIcon />}
-                        aria-controls="panel2bh-content"
-                        id="panel2bh-header"
-                    >
-                        <Typography sx={{ width: '33%', flexShrink: 0 }}>Co-Scholastic Areas</Typography>
-                    </AccordionSummary>
-                    <AccordionDetails>
-                        <div className={classes.root}>
-                            <Paper className={classes.paper} elevation={0} >
-                                <Box >
-                                    <Formik
-                                        initialValues={{ work_education: '', art_education: '', health_education: '' }}
-                                        validationSchema={validation2Schema}
-                                        onSubmit={(values, actions) => {
-                                            setTimeout(() => {
-                                                alert(JSON.stringify(values, null, 2));
-                                                actions.setSubmitting(false);
-                                            }, 1000);
+                                            )
                                         }}
-                                    >
-                                        {props => (
+                                    </Formik>
+                                </div>
+                            </Box>
+                        </Paper>
+                    </div>
+                </AccordionDetails>
+            </Accordion>
+            <Accordion sx={{ background: expanded === 'panel2' && '#D1E9FC' }} expanded={true} onChange={handleChange('panel2')}>
+                <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    aria-controls="panel2bh-content"
+                    id="panel2bh-header"
+                >
+                    <Typography sx={{ width: '33%', flexShrink: 0 }}>Co-Scholastic Areas*</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    <div className={classes.root}>
+                        <Paper className={classes.paper} elevation={0} >
+                            <Box >
+                                <Formik
+                                    initialValues={marksInfo.coScholasticArea}
+                                    validationSchema={validation2Schema}
+                                    onSubmit={(values, actions) => {
+                                        submitMarks('coScholasticArea', values);
+                                    }}
+                                >
+                                    {props => {
+                                        setFormValidate('form_2', props.isValid)
+                                        return (
                                             <form onSubmit={props.handleSubmit}>
                                                 <div><TextField
                                                     className={classes.field}
@@ -427,43 +457,43 @@ const AddResult = () => {
                                                     type="submit"
                                                     color="primary"
                                                     variant="contained"
-                                                // disabled={!isValid || values.marks.length === 0}
+                                                    disabled={!props.isValid}
                                                 >
                                                     submit
                                                 </Button>
                                             </form>
-                                        )}
-                                    </Formik>
-                                </Box>
-                            </Paper>
-                        </div>
-                    </AccordionDetails>
-                </Accordion>
-                <Accordion sx={{ background: expanded === 'panel3' && '#D1E9FC' }} expanded={true} onChange={handleChange('panel3')}>
-                    <AccordionSummary
-                        expandIcon={<ExpandMoreIcon />}
-                        aria-controls="panel3bh-content"
-                        id="panel3bh-header"
-                    >
-                        <Typography sx={{ width: '33%', flexShrink: 0 }}>
-                            Discipline
-                        </Typography>
-                    </AccordionSummary>
-                    <AccordionDetails>
-                        <div className={classes.root}>
-                            <Paper className={classes.paper} elevation={0} >
-                                <Box >
-                                    <Formik
-                                        initialValues={{ sincerity_regularity: '', values_behaiour: '', tidiness: '', rules_regulation: '' }}
-                                        validationSchema={validationForm3Schema}
-                                        onSubmit={(values, actions) => {
-                                            setTimeout(() => {
-                                                alert(JSON.stringify(values, null, 2));
-                                                actions.setSubmitting(false);
-                                            }, 1000);
-                                        }}
-                                    >
-                                        {props => (
+                                        )
+                                    }}
+                                </Formik>
+                            </Box>
+                        </Paper>
+                    </div>
+                </AccordionDetails>
+            </Accordion>
+            <Accordion sx={{ background: expanded === 'panel3' && '#D1E9FC' }} expanded={true} onChange={handleChange('panel3')}>
+                <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    aria-controls="panel3bh-content"
+                    id="panel3bh-header"
+                >
+                    <Typography sx={{ width: '33%', flexShrink: 0 }}>
+                        Discipline*
+                    </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    <div className={classes.root}>
+                        <Paper className={classes.paper} elevation={0} >
+                            <Box >
+                                <Formik
+                                    initialValues={marksInfo.discipline}
+                                    validationSchema={validationForm3Schema}
+                                    onSubmit={(values, actions) => {
+                                        submitMarks('discipline', values)
+                                    }}
+                                >
+                                    {props => {
+                                        setFormValidate('form_3', props.isValid)
+                                        return (
                                             <form onSubmit={props.handleSubmit}>
                                                 <div><TextField
                                                     className={classes.field}
@@ -520,43 +550,44 @@ const AddResult = () => {
                                                     type="submit"
                                                     color="primary"
                                                     variant="contained"
-                                                // disabled={!isValid || values.marks.length === 0}
+                                                    disabled={!props.isValid}
                                                 >
                                                     submit
                                                 </Button>
                                             </form>
-                                        )}
-                                    </Formik>
-                                </Box>
-                            </Paper>
-                        </div>
-                    </AccordionDetails>
-                </Accordion>
-                <Accordion sx={{ background: expanded === 'panel3' && '#D1E9FC' }} expanded={true} onChange={handleChange('panel3')}>
-                    <AccordionSummary
-                        expandIcon={<ExpandMoreIcon />}
-                        aria-controls="panel3bh-content"
-                        id="panel3bh-header"
-                    >
-                        <Typography sx={{ width: '33%', flexShrink: 0 }}>
-                            Remark
-                        </Typography>
-                    </AccordionSummary>
-                    <AccordionDetails>
-                        <div className={classes.root}>
-                            <Paper className={classes.paper} elevation={0} >
-                                <Box >
-                                    <Formik
-                                        initialValues={{ remarkId: '' }}
-                                        validationSchema={validationForm4Schema}
-                                        onSubmit={(values, actions) => {
-                                            setTimeout(() => {
-                                                alert(JSON.stringify(values, null, 2));
-                                                actions.setSubmitting(false);
-                                            }, 1000);
-                                        }}
-                                    >
-                                        {props => (
+                                        )
+                                    }}
+                                </Formik>
+                            </Box>
+                        </Paper>
+                    </div>
+                </AccordionDetails>
+            </Accordion>
+            <Accordion sx={{ background: expanded === 'panel3' && '#D1E9FC' }} expanded={true} onChange={handleChange('panel3')}>
+                <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    aria-controls="panel3bh-content"
+                    id="panel3bh-header"
+                >
+                    <Typography sx={{ width: '33%', flexShrink: 0 }}>
+                        Remark*
+                    </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                    <div className={classes.root}>
+                        <Paper className={classes.paper} elevation={0} >
+                            <Box >
+                                <Formik
+                                    initialValues={{ remarkId: marksInfo.remarkId }}
+                                    validationSchema={validationForm4Schema}
+                                    onSubmit={(values, actions) => {
+                                        console.log(values);
+                                        submitMarks('remarkId', values.remarkId)
+                                    }}
+                                >
+                                    {props => {
+                                        setFormValidate('form_4', props.isValid)
+                                        return (
                                             <form onSubmit={props.handleSubmit}>
                                                 <div><TextField
                                                     select
@@ -588,19 +619,22 @@ const AddResult = () => {
                                                     type="submit"
                                                     color="primary"
                                                     variant="contained"
-                                                // disabled={!isValid || values.marks.length === 0}
+                                                    disabled={!props.isValid}
                                                 >
                                                     submit
                                                 </Button>
                                             </form>
-                                        )}
-                                    </Formik>
-                                </Box>
-                            </Paper>
-                        </div>
-                    </AccordionDetails>
-                </Accordion>
-
+                                        )
+                                    }}
+                                </Formik>
+                            </Box>
+                        </Paper>
+                    </div>
+                </AccordionDetails>
+            </Accordion>
+            <Button sx={{ width: 200, marginTop: 2 }} disabled={false} variant="contained" color="warning" onClick={handlePageSubmit}>
+                Save results <KeyboardArrowRightOutlined />
+            </Button>
 
         </React.Fragment>
     )

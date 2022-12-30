@@ -41,11 +41,6 @@ const navConfig = [
     path: '/student_result',
     icon: icon('ic_user'),
   },
-  {
-    title: 'Add Student Result',
-    path: '/add_result',
-    icon: icon('ic_user'),
-  },
   // {
   //   title: 'blog',
   //   path: '/dashboard/blog',

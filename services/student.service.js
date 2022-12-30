@@ -6,7 +6,17 @@ const ObjectID = mongoose.Types.ObjectId;
 
 const getAll = async (data) => {
     console.log(data);
-    const student = await Student.find(data);
+    const student = await Student.aggregate([
+        {
+            $lookup: {
+                from: "student_results",
+                localField: "_id",
+                foreignField: "studentId",
+                as: "student_result"
+            }
+        },
+        { $match: data }
+    ]);
     return {
         status: httpStatus.OK,
         data: student,
@@ -50,9 +60,19 @@ const remove = async (data) => {
 const getALlStudentByIncharge = async (data) => {
     const isExist = await InchargeInfo.find(data).count();
     console.log('isExist-------', isExist);
-    if(isExist > 0){
+    if (isExist > 0) {
         delete data.inchargeId;
-        const student = await Student.find(data);
+        const student = await Student.aggregate([
+            {
+                $lookup: {
+                    from: "student_results",
+                    localField: "_id",
+                    foreignField: "studentId",
+                    as: "student_result"
+                }
+            },
+            { $match: data }
+        ]);
         return {
             status: httpStatus.OK,
             data: student,
@@ -63,7 +83,7 @@ const getALlStudentByIncharge = async (data) => {
             data: [],
         };
     }
-    
+
 }
 
 const addStudentResult = async (data) => {

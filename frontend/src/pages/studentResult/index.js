@@ -21,7 +21,9 @@ import { read, utils, writeFile } from 'xlsx';
 import CommonFilterModal from 'src/components/Modals/CommonFilter';
 import AddResult from './addResult';
 import CommonModal from 'src/components/Modals/commonModal';
-import AddCommonAction  from 'src/components/Actions/AddAction';
+import AddCommonAction from 'src/components/Actions/AddAction';
+import { useLoader } from 'src/hooks/useLoader';
+import ViewCommonAction from 'src/components/Actions/ViewCommonAction';
 
 
 const StudentResult = () => {
@@ -32,9 +34,14 @@ const StudentResult = () => {
         actionData: {},
     };
     const [state, setState] = React.useState(initState);
-    const [showAddResultPage, setShowAddResultPage] = React.useState(false);
-
+    const [showAddResultPage, setShowAddResultPage] = React.useState({
+        data: null,
+        show: false,
+        _id: null
+    });
+console.log('showAddResultPage', showAddResultPage);
     const { alert, showAlert, hideAlert } = useToastify();
+    const { loading, setLoading } = useLoader();
 
     const filterFormData = [
         {
@@ -104,10 +111,23 @@ const StudentResult = () => {
             if (loggedInUser && loggedInUser?._id) {
                 values['inchargeId'] = loggedInUser?._id;
                 const response = await StudentServices.getALlStudentByIncharge(values);
-                if (response.status == 200) {
-                    setstudentList([...response.data])
+                if (response.status == 200 && response.data.length > 0) {
+                    setstudentList([...response.data]);
+                    showAlert({
+                        open: true,
+                        message: 'Record found!',
+                        severity: 'success'
+                    });
+                } else {
+                    setstudentList([]);
+                    showAlert({
+                        open: true,
+                        message: 'No record found!',
+                        severity: 'error'
+                    });
                 }
             } else {
+                setstudentList([]);
                 showAlert({
                     open: true,
                     message: 'Something went wrong, Please try again!.',
@@ -116,6 +136,7 @@ const StudentResult = () => {
             }
 
         } catch (error) {
+            setstudentList([]);
             console.log(error);
         }
     }
@@ -161,15 +182,69 @@ const StudentResult = () => {
 
     const closeModal = async () => {
         setState(initState);
-        setShowAddResultPage(false);
+        setShowAddResultPage({
+            data:null,
+            show: false,
+            _id: null
+        });
     };
 
+    const handleMarksSubmit = async (payload) => {
+        if (showAddResultPage._id) {
+            payload['studentId'] = showAddResultPage._id;
+            try {
+                setLoading(true);
+                const response = await StudentServices.addStudentResult(payload);
+                if (response.status == 200) {
+                    showAlert({
+                        open: true,
+                        message: 'Result added Successfully.',
+                        severity: 'success'
+                    });
+                }
+            } catch (error) {
+                showAlert({
+                    open: true,
+                    message: 'Something went wrong, Please try again!.',
+                    severity: 'error'
+                });
+                console.log(error);
+            } finally {
+                closeModal();
+                setLoading(false);
+            }
+        } else {
+            closeModal();
+            showAlert({
+                open: true,
+                message: 'Something went wrong, Please try again!.',
+                severity: 'error'
+            });
+        }
 
-    const AddAction = (action) => (
-        <AddCommonAction
-            onClick={() => setShowAddResultPage(true)}
-        />
-    )
+    }
+
+    const ViewAction = ({data}) => {
+        return (
+            <ViewCommonAction onClick={() => setShowAddResultPage({
+                _id: data._id,
+                data: data.student_result[0],
+                show: true
+            })} />
+        )
+    }
+    const AddAction = ({_id}) => {
+        return (
+            <AddCommonAction
+                title="Add result"
+                onClick={() => setShowAddResultPage({
+                    data:null,
+                    _id: _id,
+                    show: true
+                })}
+            />
+        )
+    }
 
     const DeleteAction = (action) => (
         <DeleteCommonAction
@@ -177,10 +252,10 @@ const StudentResult = () => {
         />
     );
 
-    const rowActions = [AddAction];
+    const rowActions = [];
 
     const tableHeaders = [
-        // { title: "Action", key: "action", renderRow: (row) => { return <span>{row.inchargeId.name}</span> } },
+    
         { title: "Name", key: "name" },
         { title: "Father Name", key: "fathername" },
         { title: "Mother Name", key: "mothername" },
@@ -193,7 +268,8 @@ const StudentResult = () => {
         { title: "Section", key: "section" },
         { title: "Session", key: "session" },
         { title: "Term", key: "term" },
-        { title: "Created Date", key: "createdAt" }
+        { title: "Created Date", key: "createdAt" },
+        { title: "Action", key: "action", renderRow: (row) => { return row.student_result.length > 0 ? <ViewAction data={row}/> : <AddAction _id={row._id}/>} },
     ];
 
     const deleteVariableTitle = undefined;
@@ -221,7 +297,7 @@ const StudentResult = () => {
             <EnhancedTable
                 tableTitle={'student'}
                 headerComponents={[]}
-                actions={rowActions}
+                actions={false}
                 tableData={studentList}
                 header={tableHeaders}
                 sortable={true}
@@ -239,10 +315,10 @@ const StudentResult = () => {
                 onConfirm={() => onDeleteSubmit()}
             />
 
-            {showAddResultPage && (
+            {showAddResultPage.show && (
                 <CommonModal
                     title={'Add Result'}
-                    open={showAddResultPage}
+                    open={showAddResultPage.show}
                     onClose={() => closeModal()}
                     onSubmit={(e) => onModalSubmit(e)}
                     size={"md"}
@@ -251,7 +327,7 @@ const StudentResult = () => {
                     onWatchChange={() => { }}
                     defaultValues={{}}
                 >
-                    <AddResult />
+                    <AddResult handleMarksSubmit={handleMarksSubmit} results={showAddResultPage.data} />
                 </CommonModal>
             )}
         </Container>

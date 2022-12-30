@@ -211,6 +211,7 @@ const Incharge = () => {
   const tableHeaders = [
     { title: "Name", key: "name" },
     { title: "Email", key: "email" },
+    { title: "Role", key: "role", renderRow : (row) => { return <span>{row.role.toUpperCase()}</span> } },
     { title: "Status", key: "status" }
   ];
 

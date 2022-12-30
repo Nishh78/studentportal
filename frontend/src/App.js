@@ -6,17 +6,20 @@ import ThemeProvider from './theme';
 import ScrollToTop from './components/scroll-to-top';
 import { StyledChart } from './components/chart';
 import { ToastifyProvider } from './hooks/useToastify';
+import { LoaderProvider } from './hooks/useLoader';
 
 // ----------------------------------------------------------------------
 
 export default function App() {
   return (
     <ThemeProvider>
-      <ToastifyProvider>
-      <ScrollToTop />
-      <StyledChart />
-      <Router />
-      </ToastifyProvider>
+      <LoaderProvider>
+        <ToastifyProvider>
+          <ScrollToTop />
+          <StyledChart />
+          <Router />
+        </ToastifyProvider>
+      </LoaderProvider>
     </ThemeProvider>
   );
 }

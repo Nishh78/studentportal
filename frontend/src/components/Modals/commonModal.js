@@ -60,19 +60,6 @@ const CommonModal = ({
     React.useEffect(() => {
         setFormErrors(formState.errors);
     }, [formState]);
-    const handleFileFieldChange = (name, file) => {
-        setFileFields({
-            [name]: file,
-        });
-    };
-
-    const handleOtherChange = ({ name, value }) => {
-        console.log("handleOtherChange", name, value);
-        setOtherFields({
-            ...otherFields,
-            [name]: value,
-        });
-    };
 
     const handleClose = () => {
         onClose();
@@ -110,11 +97,8 @@ const CommonModal = ({
                     {children}
                 </DialogContent>
                 <DialogActions style={{ marginTop: 10 }}>
-                    <Button disabled={isLoading} variant="text" onClick={() => handleClose()} color="secondary" >
+                    <Button disabled={isLoading} onClick={() => handleClose()}  variant="contained" color="primary" >
                         Cancel
-                    </Button>
-                    <Button onClick={(e) => { e.preventDefault(); btnRef.current.click() }} type="submit" variant="contained" color="primary" disabled={isLoading}>
-                        {isLoading ? <CircularProgress color="inherit" size={25} /> : "Submit"}
                     </Button>
                 </DialogActions>
             </Dialog>

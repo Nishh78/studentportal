@@ -22,7 +22,7 @@ const StudentServices = {
         return apiClient.get("getALlStudentByIncharge", {params:payload});
     },
     addStudentResult: (payload) => {
-        return apiClient.post("addStudentResult", {data:payload});
+        return apiClient.post("addStudentResult", payload);
     },
     getStudentInfo: (payload) => {
         return apiClient.get("getStudentInfo", {params:payload});
