@@ -36,10 +36,11 @@ const StudentResult = () => {
     const [state, setState] = React.useState(initState);
     const [showAddResultPage, setShowAddResultPage] = React.useState({
         data: null,
+        mode: null,
         show: false,
         _id: null
     });
-console.log('showAddResultPage', showAddResultPage);
+
     const { alert, showAlert, hideAlert } = useToastify();
     const { loading, setLoading } = useLoader();
 
@@ -184,6 +185,7 @@ console.log('showAddResultPage', showAddResultPage);
         setState(initState);
         setShowAddResultPage({
             data:null,
+            mode:null,
             show: false,
             _id: null
         });
@@ -224,10 +226,46 @@ console.log('showAddResultPage', showAddResultPage);
 
     }
 
+    const handleMarksUpdate = async (payload) => {
+        if (showAddResultPage._id) {
+            payload['studentId'] = showAddResultPage._id;
+            try {
+                setLoading(true);
+                const response = await StudentServices.updateStudentResult(payload);
+                if (response.status == 200) {
+                    showAlert({
+                        open: true,
+                        message: 'Result Updated Successfully.',
+                        severity: 'success'
+                    });
+                }
+            } catch (error) {
+                showAlert({
+                    open: true,
+                    message: 'Something went wrong, Please try again!.',
+                    severity: 'error'
+                });
+                console.log(error);
+            } finally {
+                closeModal();
+                setLoading(false);
+            }
+        } else {
+            closeModal();
+            showAlert({
+                open: true,
+                message: 'Something went wrong, Please try again!.',
+                severity: 'error'
+            });
+        }
+
+    }
+
     const ViewAction = ({data}) => {
         return (
             <ViewCommonAction onClick={() => setShowAddResultPage({
                 _id: data._id,
+                mode:'view',
                 data: data.student_result[0],
                 show: true
             })} />
@@ -239,6 +277,7 @@ console.log('showAddResultPage', showAddResultPage);
                 title="Add result"
                 onClick={() => setShowAddResultPage({
                     data:null,
+                    mode:'add',
                     _id: _id,
                     show: true
                 })}
@@ -327,7 +366,7 @@ console.log('showAddResultPage', showAddResultPage);
                     onWatchChange={() => { }}
                     defaultValues={{}}
                 >
-                    <AddResult handleMarksSubmit={handleMarksSubmit} results={showAddResultPage.data} />
+                    <AddResult handleMarksSubmit={handleMarksSubmit} results={showAddResultPage.data} mode={showAddResultPage.mode}/>
                 </CommonModal>
             )}
         </Container>

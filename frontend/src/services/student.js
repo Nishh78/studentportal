@@ -24,6 +24,9 @@ const StudentServices = {
     addStudentResult: (payload) => {
         return apiClient.post("addStudentResult", payload);
     },
+    updateStudentResult: (payload) => {
+        return apiClient.put("updateStudentResult", payload);
+    },
     getStudentInfo: (payload) => {
         return apiClient.get("getStudentInfo", {params:payload});
     }

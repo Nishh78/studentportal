@@ -9,35 +9,36 @@ const navConfig = [
   {
     title: 'dashboard',
     path: '/dashboard',
+    id:'dashboard',
     icon: icon('ic_analytics'),
   },
-  // {
-  //   title: 'user',
-  //   path: '/user',
-  //   icon: icon('ic_user'),
-  // },
   {
     title: 'incharge',
+    id:'incharge',
     path: '/incharge',
     icon: icon('ic_user'),
   },
   {
     title: 'remarks',
+    id:'remarks',
     path: '/remarks',
     icon: icon('ic_user'),
   },
   {
     title: 'incharge Info',
+    id:'incharge_info',
     path: '/incharge_info',
     icon: icon('ic_user'),
   },
   {
     title: 'student',
+    id:'student',
     path: '/student',
     icon: icon('ic_user'),
   },
   {
     title: 'student Result',
+    id:'student_result',
     path: '/student_result',
     icon: icon('ic_user'),
   },

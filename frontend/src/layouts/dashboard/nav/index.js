@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 // @mui
 import { styled, alpha } from '@mui/material/styles';
@@ -34,12 +34,28 @@ Nav.propTypes = {
   onCloseNav: PropTypes.func,
 };
 
+const SUPER_ADMIN_VIEWS = ['dashboard', 'incharge', 'remarks', 'incharge_info', 'student'];
+const IMCHARGE_VIEWS = ['dashboard', 'student_result'];
+
 export default function Nav({ openNav, onCloseNav }) {
   const { pathname } = useLocation();
 
   const isDesktop = useResponsive('up', 'lg');
 
-  const user = JSON.parse(localStorage.getItem('user')) || '';
+  const [userInfo, setUserInfo] = React.useState(JSON.parse(localStorage.getItem('user')) || '')
+
+  const [nav, setNav] = React.useState(navConfig || []);
+
+  const setRolBaseNav = React.useCallback(() => {
+    const views = [...navConfig].filter(el => userInfo?.role == 'superadmin' ? SUPER_ADMIN_VIEWS.includes(el.id) : IMCHARGE_VIEWS.includes(el.id));
+    setNav(views);
+  },[userInfo])
+
+  useEffect(() => {
+    if (userInfo && userInfo?.role) {
+      setRolBaseNav()
+    }
+  },[userInfo]);
 
   useEffect(() => {
     if (openNav) {
@@ -66,18 +82,18 @@ export default function Nav({ openNav, onCloseNav }) {
 
             <Box sx={{ ml: 2 }}>
               <Typography variant="subtitle2" sx={{ color: 'text.primary' }}>
-                {user.name}
+                {userInfo.name}
               </Typography>
 
               {/* <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                {user.role}
+                {userInfo.role}
               </Typography> */}
             </Box>
           </StyledAccount>
         </Link>
       </Box>
 
-      <NavSection data={navConfig} />
+      <NavSection data={nav} />
 
       {/* <Box sx={{ flexGrow: 1 }} />
 

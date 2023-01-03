@@ -5,7 +5,6 @@ import mongoose from "mongoose";
 const ObjectID = mongoose.Types.ObjectId;
 
 const getAll = async (data) => {
-    console.log(data);
     const student = await Student.aggregate([
         {
             $lookup: {
@@ -59,7 +58,6 @@ const remove = async (data) => {
 
 const getALlStudentByIncharge = async (data) => {
     const isExist = await InchargeInfo.find(data).count();
-    console.log('isExist-------', isExist);
     if (isExist > 0) {
         delete data.inchargeId;
         const student = await Student.aggregate([
@@ -94,6 +92,17 @@ const addStudentResult = async (data) => {
     };
 }
 
+const updateStudentResult = async (data) => {
+    const updatestudentResult = await studentResultSchema.findByIdAndUpdate(
+        {studentId : data.studentId},
+        data
+    );
+    return {
+        status: httpStatus.OK,
+        data: updatestudentResult,
+    };
+}
+
 const getStudentInfo = async (data) => {
     const studentResult = await studentResultSchema.find(data);
     return {
@@ -101,6 +110,7 @@ const getStudentInfo = async (data) => {
         data: studentResult,
     };
 }
+
 
 export default {
     getAll,
@@ -110,6 +120,7 @@ export default {
     remove,
     getALlStudentByIncharge,
     addStudentResult,
+    updateStudentResult,
     getStudentInfo
 }
 

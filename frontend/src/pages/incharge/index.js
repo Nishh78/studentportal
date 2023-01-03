@@ -72,8 +72,9 @@ const Incharge = () => {
       type: "select",
       name: "status",
       size: 6,
-      defaultValue: "false",
+      defaultValue: "true",
       label: "Status",
+      disabled:state.openCommonModal == 'add' ? true : false,
       options: [
         {
           title: "Active",

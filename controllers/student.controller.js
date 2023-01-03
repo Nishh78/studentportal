@@ -41,6 +41,12 @@ const addStudentResult = catchAsync(async (req, res) => {
     await res.status(result.status).send(result)
 });
 
+const updateStudentResult = catchAsync(async (req, res) => {
+    console.log(req.body);
+    const result = await StudentService.updateStudentResult(req.body);
+    await res.status(result.status).send(result)
+});
+
 const getStudentInfo = catchAsync(async (req, res) => {
     console.log(req.query);
     const result = await StudentService.getStudentInfo(req.query);
@@ -55,5 +61,6 @@ export default {
     remove,
     getALlStudentByIncharge,
     addStudentResult,
+    updateStudentResult,
     getStudentInfo
 }

@@ -21,6 +21,7 @@ router.delete('/student', studentController.remove);
 //student-result
 router.get('/getALlStudentByIncharge', studentController.getALlStudentByIncharge);
 router.post('/addStudentResult', studentController.addStudentResult);
+router.put('/updateStudentResult', studentController.updateStudentResult);
 router.get('/getStudentInfo', studentController.getStudentInfo);
 //incharge 
 router.get('/inchargeInfo', inchargeInfoController.all);
