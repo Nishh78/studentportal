@@ -30,8 +30,8 @@ const TableData = ({ data, header, actions, handleCheckChange }) => {
       {data.length === 0 && <Nodata />}
       {data?.map((child, childindex) => {
         return (
-          <TableRow key={childindex}>
-            <TableCell>{++childindex}</TableCell>
+          <TableRow key={childindex} hover tabIndex={-1} >
+            {/* <TableCell>{++childindex}</TableCell> */}
             {isItemSelected && (
               <TableCell>
                 <div class="checkbox">

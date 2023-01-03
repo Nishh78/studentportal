@@ -214,7 +214,7 @@ const InchargeInfo = () => {
 
     const tableHeaders = [
         { title: "Incharge", key: "inchargeId", renderRow: (row) => {return <span>{row.inchargeId.name}</span> } },
-        { title: "Session", key: "session" },
+        { title: "Session", key: "session", renderRow: (row) => {return <span>{row.session ? SESSION_OPTIONS.find(el => el.value == row.session)?.title : '' }</span> } },
         { title: "Class", key: "class" },
         { title: "Section", key: "section" },
         { title: "Term", key: "term" },
@@ -258,7 +258,7 @@ const InchargeInfo = () => {
                 onConfirm={() => onDeleteSubmit()}
             />
 
-            {formData && (
+            {(state.openCommonModal && formData) && (
                 <CommonActionModal
                     formData={formData}
                     title={'Incharge'}

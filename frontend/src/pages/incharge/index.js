@@ -254,7 +254,7 @@ const Incharge = () => {
         onConfirm={() => onDeleteSubmit()}
       />
 
-      {formData && (
+      {(state.openCommonModal && formData) && (
         <CommonActionModal
           formData={formData}
           title={'Incharge'}

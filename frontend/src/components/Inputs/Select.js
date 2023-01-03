@@ -63,6 +63,12 @@ const MyTextField = React.forwardRef((props) => {
                 </MenuItem>
               )}
               {defaultOption && defaultOption()}
+              <MenuItem
+                    value={null}
+                    key={'index-0'}
+                  >
+                    {'All'}
+                  </MenuItem>
               {options.length > 0 ? options?.map((opt, index) => {
                 return (
                   <MenuItem

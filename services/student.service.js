@@ -1,10 +1,26 @@
 import httpStatus from "http-status";
 import { Student, InchargeInfo, studentResultSchema } from "../models/index.js";
 import mongoose from "mongoose";
+import pdf from "pdf-creator-node";
+import path from "path";
+import fs from "fs";
+import { fileURLToPath } from 'url';
 
 const ObjectID = mongoose.Types.ObjectId;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const options = {
+    format: "A3",
+    orientation: "portrait",
+    border: "10mm"
+}
 
 const getAll = async (data) => {
+    if (data && data?.inchargeId) {
+        const incharge = await InchargeInfo.findOne({ inchargeId: data?.inchargeId }, { session: 1, class: 1, section: 1, term: 1, _id:0 }).lean();
+        data = {...incharge};
+    }
     const student = await Student.aggregate([
         {
             $lookup: {
@@ -94,7 +110,7 @@ const addStudentResult = async (data) => {
 
 const updateStudentResult = async (data) => {
     const updatestudentResult = await studentResultSchema.findByIdAndUpdate(
-        {studentId : data.studentId},
+        { studentId: data.studentId },
         data
     );
     return {
@@ -111,6 +127,56 @@ const getStudentInfo = async (data) => {
     };
 }
 
+const generateStudentResultPdf = async (data) => {
+    try {
+        const student = await Student.aggregate([
+            {
+                $lookup: {
+                    from: "student_results",
+                    localField: "_id",
+                    foreignField: "studentId",
+                    as: "student_result"
+                }
+            },
+            { $match: data }
+        ]);
+        console.log('student', student);
+        if (student) {
+            // const html = fs.readFileSync(path.join(__dirname + '/views/studentResult.html'), 'utf-8');
+            // const filename = student.name + student.adminNo + Math.random() + '_result' + '.pdf';
+            // const document = {
+            //     html: html,
+            //     data: {
+            //         products: student
+            //     },
+            //     path: './docs/' + filename
+            // }
+            // pdf.create(document, options)
+            //     .then(res => {
+            //         console.log(res);
+            //     }).catch(error => {
+            //         console.log(error);
+            //     });
+            // const filepath = 'http://localhost:3000/docs/' + filename;
+
+            return {
+                status: httpStatus.OK,
+                data: null
+            };
+        } else {
+            return {
+                status: httpStatus.OK,
+                data: null,
+            };
+        }
+    } catch (error) {
+        return {
+            status: httpStatus.OK,
+            data: null,
+        };
+    }
+}
+
 
 export default {
     getAll,
@@ -121,6 +187,7 @@ export default {
     getALlStudentByIncharge,
     addStudentResult,
     updateStudentResult,
-    getStudentInfo
+    getStudentInfo,
+    generateStudentResultPdf
 }
 

@@ -86,6 +86,14 @@ const CommonActionModal = ({
     setFormErrors();
     reset();
   }
+
+  // React.useEffect(() => {
+  //   return () => {
+  //     setFormErrors();
+  //     reset();
+  //   }
+  // }, []);
+
   React.useEffect(() => {
     onWatchChange(watching);
   }, [watching]);
@@ -131,7 +139,7 @@ const CommonActionModal = ({
                 {formData.map((item, index) => {
                   const MyInput = Inputs[item.type];
                   let defaultValue = data && data[item.name] ? data[item.name] : item?.defaultValue;
-                  if(item.type == 'select' && typeof defaultValue === "object"){
+                  if (item.type == 'select' && typeof defaultValue === "object") {
                     defaultValue = defaultValue?._id || '';
                   }
                   console.log('defaultValue', defaultValue);

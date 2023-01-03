@@ -53,6 +53,12 @@ const getStudentInfo = catchAsync(async (req, res) => {
     await res.status(result.status).send(result)
 });
 
+const generateStudentResultPdf = catchAsync(async (req, res) => {
+    console.log(req.body);
+    const result = await StudentService.generateStudentResultPdf(req.body);
+    await res.status(result.status).send(result)
+});
+
 export default {
     all,
     getBydId,
@@ -62,5 +68,6 @@ export default {
     getALlStudentByIncharge,
     addStudentResult,
     updateStudentResult,
-    getStudentInfo
+    getStudentInfo,
+    generateStudentResultPdf
 }

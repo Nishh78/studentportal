@@ -51,7 +51,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     width: '100%',
     height: '100%',
     [theme.breakpoints.up('md')]: {
-      width: '20ch',
+      width: '23ch',
     },
   },
 }));
@@ -82,9 +82,9 @@ function EnhancedTableHead(props) {
   return (
     <TableHead>
       <TableRow>
-        <TableCell className={classes.headCell} width="5%" >
+        {/* <TableCell className={classes.headCell} width="5%" >
           No.
-        </TableCell>
+        </TableCell> */}
         {header.map((headCell) => (
           <TableCell
             key={headCell.title}

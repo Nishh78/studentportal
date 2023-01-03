@@ -31,9 +31,14 @@ import {
   SECTION_DEFAULT_OPTION, TERM_DEFAULT_OPTION, TERM_OPTIONS, SESSION_OPTIONS, SESSION_DEFAULT_OPTIONS
 } from 'src/utils/constant';
 import { useToastify } from 'src/hooks/useToastify';
+import { useLoader } from 'src/hooks/useLoader';
 import { read, utils, writeFile } from 'xlsx';
 import CommonFilterModal from 'src/components/Modals/CommonFilter';
-
+import AddCommonAction from 'src/components/Actions/AddAction';
+import ViewCommonAction from 'src/components/Actions/ViewCommonAction';
+import CommonModal from 'src/components/Modals/commonModal';
+import AddResult from '../studentResult/addResult';
+import InchargeServices from 'src/services/incharge';
 
 const Student = () => {
 
@@ -43,8 +48,17 @@ const Student = () => {
     actionData: {},
   };
   const [state, setState] = React.useState(initState);
+  const [showAddResultPage, setShowAddResultPage] = React.useState({
+    data: null,
+    mode: null,
+    show: false,
+    _id: null
+  });
+  const [inchargeOptions, setInchargeOptions] = useState([]);
+
 
   const { alert, showAlert, hideAlert } = useToastify();
+  const { loading, setLoading } = useLoader();
 
   const formData = [
     {
@@ -101,13 +115,23 @@ const Student = () => {
   const filterFormData = [
     {
       type: "select",
+      name: "inchargeId",
+      size: 12,
+      label: "Incharge",
+      options: inchargeOptions,
+      required: false,
+      optionLabelProp: "name",
+      optionValueProp: "_id",
+    },
+    {
+      type: "select",
       name: "session",
       label: "Session",
       size: 3,
       options: SESSION_OPTIONS,
       optionLabelProp: "title",
       optionValueProp: "value",
-      required:false
+      required: false
     },
     {
       type: "select",
@@ -141,11 +165,22 @@ const Student = () => {
     }
   ]
 
-  const fetchData = async (payload={}) => {
+  const fetchData = async (payload = {}) => {
     try {
       const response = await StudentServices.getAll(payload);
       if (response.status == 200) {
         setstudentList([...response.data])
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchAllSimpleIncharge = async () => {
+    try {
+      const response = await InchargeServices.getAllSimpleIncharge();
+      if (response.status == 200) {
+        setInchargeOptions([...response.data])
       }
     } catch (error) {
       console.log(error);
@@ -193,9 +228,10 @@ const Student = () => {
   }
 
   const onFilterSubmit = async (values) => {
-    const payload = Object.entries(values).reduce((acc, [k, v]) => v ? {...acc, [k]:v} : acc , {})
+    const payload = Object.entries(values).reduce((acc, [k, v]) => v ? { ...acc, [k]: v } : acc, {})
     await fetchData(payload);
   }
+
   const onModalSubmit = async ({ studentsFile, ...rest }) => {
     const values = await convertxlsxFileToList(studentsFile[0], rest);
     const mode = state.openCommonModal;
@@ -250,22 +286,74 @@ const Student = () => {
     }
   }
 
+  const handleMarksUpdate = async (payload) => {
+    if (showAddResultPage._id) {
+      payload['studentId'] = showAddResultPage._id;
+      try {
+        setLoading(true);
+        const response = await StudentServices.updateStudentResult(payload);
+        if (response.status == 200) {
+          showAlert({
+            open: true,
+            message: 'Result Updated Successfully.',
+            severity: 'success'
+          });
+        }
+      } catch (error) {
+        showAlert({
+          open: true,
+          message: 'Something went wrong, Please try again!.',
+          severity: 'error'
+        });
+        console.log(error);
+      } finally {
+        closeModal();
+        setLoading(false);
+      }
+    } else {
+      closeModal();
+      showAlert({
+        open: true,
+        message: 'Something went wrong, Please try again!.',
+        severity: 'error'
+      });
+    }
+
+  }
+
   const closeModal = async () => {
     setState(initState);
+    setShowAddResultPage({
+      data: null,
+      mode: null,
+      show: false,
+      _id: null
+    });
   };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-
-  const EditAction = (action) => {
+  const ViewAction = ({ data }) => {
     return (
+      <ViewCommonAction onClick={() => setShowAddResultPage({
+        _id: data._id,
+        mode: 'view',
+        data: data.student_result[0],
+        show: true
+      })} />
+    )
+  }
 
+  const EditAction = ({ _id }) => {
+    return (
       <EditCommonAction
-        onClick={() => handleRowActionClick("edit", action.data)}
+        title="Edit result"
+        onClick={() => setShowAddResultPage({
+          data: null,
+          mode: 'add',
+          _id: _id,
+          show: true
+        })}
       />
-    );
+    )
   }
 
   const DeleteAction = (action) => (
@@ -274,22 +362,28 @@ const Student = () => {
     />
   );
 
+  useEffect(() => {
+    fetchData();
+    fetchAllSimpleIncharge();
+  }, []);
+
   const rowActions = [];
 
   const tableHeaders = [
+    { title: "Action", key: "action", renderRow: (row) => { return row.student_result.length > 0 ? <EditAction _id={row._id} /> : <></> } },
     { title: "Name", key: "name" },
     { title: "Father Name", key: "fathername" },
     { title: "Mother Name", key: "mothername" },
     { title: "Admin No.", key: "adminNo" },
-    // { title: "Mobile", key: "mobile" },
-    // { title: "Mobile Alternative", key: "mobile2" },
-    // { title: "Address", key: "address" },
-    // { title: "DOB", key: "dob" },
-    { title: "Session", key: "session" },
+    { title: "Mobile", key: "mobile" },
+    { title: "Mobile Alternative", key: "mobile2" },
+    { title: "Address", key: "address" },
+    { title: "DOB", key: "dob" },
+    { title: "Session", key: "session", renderRow: (row) => { return <span>{row.session ? SESSION_OPTIONS.find(el => el.value == row.session)?.title : ''}</span> } },
     { title: "Class", key: "class" },
     { title: "Section", key: "section" },
     { title: "Term", key: "term" },
-    { title: "Created Date", key: "createdAt" }
+    { title: "Created Date", key: "createdAt" },
   ];
 
   const deleteVariableTitle = undefined;
@@ -329,8 +423,8 @@ const Student = () => {
         header={tableHeaders}
         sortable={true}
         paginated={true}
-        searchByLabel={"name"}
-        searchByField={['name']}
+        searchByLabel={"Name, Admin No"}
+        searchByField={['name', 'adminNo']}
         rowsPerPage={5}
       />
 
@@ -342,7 +436,7 @@ const Student = () => {
         onConfirm={() => onDeleteSubmit()}
       />
 
-      {formData && (
+      {(state.openCommonModal && formData) && (
         <CommonActionModal
           formData={formData}
           title={'student'}
@@ -357,6 +451,23 @@ const Student = () => {
           onWatchChange={() => { }}
           defaultValues={{}}
         />
+      )}
+
+
+      {showAddResultPage.show && (
+        <CommonModal
+          title={`${showAddResultPage?.mode !== 'view' ? 'Edit' : 'View'} Result`}
+          open={showAddResultPage.show}
+          onClose={() => closeModal()}
+          onSubmit={(e) => onModalSubmit(e)}
+          size={"md"}
+          fullScreen={true}
+          watchFields={[]}
+          onWatchChange={() => { }}
+          defaultValues={{}}
+        >
+          <AddResult handleMarksSubmit={handleMarksUpdate} results={showAddResultPage.data} mode={showAddResultPage.mode} />
+        </CommonModal>
       )}
     </Container>
   )

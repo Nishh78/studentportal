@@ -59,7 +59,7 @@ const StudentResult = () => {
             type: "select",
             name: "class",
             label: "Class",
-            required: true,
+            required: false,
             size: 3,
             options: CLASS_OPTIONS.map(item => { return { title: item, value: item } }),
             optionLabelProp: "title",
@@ -72,7 +72,7 @@ const StudentResult = () => {
             options: SECTION_OPTIONS.map(item => { return { title: item, value: item } }),
             optionLabelProp: "title",
             optionValueProp: "value",
-            required: true,
+            required: false,
             size: 3,
         },
         {
@@ -82,7 +82,7 @@ const StudentResult = () => {
             options: TERM_OPTIONS.map(item => { return { title: item, value: item } }),
             optionLabelProp: "title",
             optionValueProp: "value",
-            required: true,
+            required: false,
             size: 3,
         }
     ]
@@ -294,21 +294,20 @@ const StudentResult = () => {
     const rowActions = [];
 
     const tableHeaders = [
-    
+        { title: "Action", key: "action", renderRow: (row) => { return row.student_result.length > 0 ? <ViewAction data={row}/> : <AddAction _id={row._id}/>} },
         { title: "Name", key: "name" },
         { title: "Father Name", key: "fathername" },
         { title: "Mother Name", key: "mothername" },
         { title: "Admin No.", key: "adminNo" },
-        // { title: "Mobile", key: "mobile" },
-        // { title: "Mobile Alternative", key: "mobile2" },
-        // { title: "Address", key: "address" },
-        // { title: "DOB", key: "dob" },
+        { title: "Mobile", key: "mobile" },
+        { title: "Mobile Alternative", key: "mobile2" },
+        { title: "Address", key: "address" },
+        { title: "DOB", key: "dob" },
         { title: "Class", key: "class" },
         { title: "Section", key: "section" },
-        { title: "Session", key: "session" },
+        { title: "Session", key: "session", renderRow: (row) => {return <span>{row.session ? SESSION_OPTIONS.find(el => el.value == row.session)?.title : '' }</span> } },
         { title: "Term", key: "term" },
         { title: "Created Date", key: "createdAt" },
-        { title: "Action", key: "action", renderRow: (row) => { return row.student_result.length > 0 ? <ViewAction data={row}/> : <AddAction _id={row._id}/>} },
     ];
 
     const deleteVariableTitle = undefined;
@@ -356,7 +355,7 @@ const StudentResult = () => {
 
             {showAddResultPage.show && (
                 <CommonModal
-                    title={'Add Result'}
+                    title={`${showAddResultPage?.mode !== 'view' ? 'Add' : 'View'} Result`}
                     open={showAddResultPage.show}
                     onClose={() => closeModal()}
                     onSubmit={(e) => onModalSubmit(e)}
