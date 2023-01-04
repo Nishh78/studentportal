@@ -51,7 +51,8 @@ const getStudentInfo = catchAsync(async (req, res) => {
 
 const generateStudentResultPdf = catchAsync(async (req, res) => {
     console.log(req.body);
-    const result = await StudentService.generateStudentResultPdf(req.body);
+    var origin = req.get('origin');
+    const result = await StudentService.generateStudentResultPdf({...req.body, origin});
     await res.status(result.status).send(result)
 });
 
