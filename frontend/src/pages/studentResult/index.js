@@ -107,6 +107,7 @@ const StudentResult = () => {
     };
 
     const onFilterSubmit = async (values) => {
+        setstudentList([]);
         try {
             let payload = Object.entries(values).reduce((acc, [k, v]) => v ? { ...acc, [k]: v } : acc, {})
             const loggedInUser = JSON.parse(localStorage.getItem('user'));

@@ -167,12 +167,26 @@ const Student = () => {
   ]
 
   const fetchData = async (payload = {}) => {
+    setstudentList([]);
     try {
       const response = await StudentServices.getAll(payload);
-      if (response.status == 200) {
-        setstudentList([...response.data])
-      }
+      if (response.status == 200 && response.data.length > 0) {
+        setstudentList([...response.data]);
+        showAlert({
+            open: true,
+            message: 'Record found!',
+            severity: 'success'
+        });
+    } else {
+        setstudentList([]);
+        showAlert({
+            open: true,
+            message: 'No record found!',
+            severity: 'error'
+        });
+    }
     } catch (error) {
+      setstudentList([]);
       console.log(error);
     }
   };

@@ -51,11 +51,11 @@ export default function Nav({ openNav, onCloseNav }) {
     setNav(views);
   },[userInfo])
 
-  // useEffect(() => {
-  //   if (userInfo && userInfo?.role) {
-  //     setRolBaseNav()
-  //   }
-  // },[userInfo]);
+  useEffect(() => {
+    if (userInfo && userInfo?.role) {
+      setRolBaseNav()
+    }
+  },[userInfo]);
 
   useEffect(() => {
     if (openNav) {
