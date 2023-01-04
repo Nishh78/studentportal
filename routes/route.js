@@ -23,7 +23,7 @@ router.get('/getALlStudentByIncharge', studentController.getALlStudentByIncharge
 router.post('/addStudentResult', studentController.addStudentResult);
 router.put('/updateStudentResult', studentController.updateStudentResult);
 router.get('/getStudentInfo', studentController.getStudentInfo);
-router.get('/generateStudentResultPdf', studentController.generateStudentResultPdf);
+router.post('/generateStudentResultPdf', studentController.generateStudentResultPdf);
 //incharge 
 router.get('/inchargeInfo', inchargeInfoController.all);
 router.post('/inchargeInfo', inchargeInfoController.create);

@@ -10,7 +10,10 @@ import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
-import { Box, InputBase, lighten, TableSortLabel } from "@mui/material";
+import {
+  Box, InputBase, lighten, TableSortLabel, Popover,
+  MenuItem
+} from "@mui/material";
 import TableData from "./TableData";
 import SearchIcon from '@material-ui/icons/Search';
 import {
@@ -74,6 +77,7 @@ function EnhancedTableHead(props) {
     header,
     orderBy, order,
     onRequestSort,
+    actionPosition="end"
   } = props;
   const createSortHandler = (event, property) => {
     onRequestSort(event, property);
@@ -85,6 +89,9 @@ function EnhancedTableHead(props) {
         {/* <TableCell className={classes.headCell} width="5%" >
           No.
         </TableCell> */}
+         {actionPosition === 'start' && (
+          <TableCell className={classes.headCell}>Actions</TableCell>
+        )}
         {header.map((headCell) => (
           <TableCell
             key={headCell.title}
@@ -108,7 +115,7 @@ function EnhancedTableHead(props) {
             }
           </TableCell>
         ))}
-        {props.showActionHeader && (
+        {(props.showActionHeader && actionPosition !== 'start') && (
           <TableCell className={classes.headCell}>Actions</TableCell>
         )}
       </TableRow>
@@ -215,7 +222,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function EnhancedTable(props) {
   const { setTableData, searchByLabel,
-    searchByField = [], tableData = [], sortable } = props
+    searchByField = [], tableData = [], sortable, actionPosition='end' } = props
   const classes = useStyles();
   const [order, setOrder] = React.useState("asc");
   const [orderBy, setOrderBy] = React.useState("calories");
@@ -290,6 +297,19 @@ export default function EnhancedTable(props) {
     }
   }, [searchQuery]);
 
+  const [open, setOpen] = React.useState(null);
+  const [startPosition, setStartPosition] = React.useState(false);
+
+  const handleOpenMenu = (event, id) => {
+    setStartPosition({ x: event.clientX, y: event.clientY });
+    setOpen(event.currentTarget);
+  };
+  console.log('open', startPosition);
+  const handleCloseMenu = () => {
+    setStartPosition(false);
+    setOpen(null);
+  };
+
   return (
     <div className={classes.root}>
       <Paper className={classes.paper} elevation={0} variant={props?.variant}>
@@ -331,11 +351,14 @@ export default function EnhancedTable(props) {
               onRequestSort={handleRequestSort}
               rowCount={rows.length}
               showActionHeader={props?.actions ? true : false}
+              actionPosition={actionPosition}
             />
 
             <TableData
               actions={props.actions}
               header={props.header}
+              actionPosition={actionPosition}
+              handleOpenMenu={handleOpenMenu}
               handleCheckChange={(value, index) => {
                 handleCheckChange(value, index);
               }}
@@ -357,11 +380,41 @@ export default function EnhancedTable(props) {
             onRowsPerPageChange={handleChangeRowsPerPage}
           />
         )}
+
       </Paper>
       {/* <FormControlLabel
         control={<Switch checked={dense} onChange={handleChangeDense} />}
         label="Dense padding"
       /> */}
+      {/* {(props.actions?.length > 0 && Boolean(open)) && (
+        <div style={{top:startPosition ? startPosition.y : 0,  left : startPosition ? startPosition.x : 0}}>
+          <Popover
+            open={Boolean(open)}
+            // anchorEl={open}
+            onClose={handleCloseMenu}
+            anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
+            anchorPosition={{top:startPosition ? startPosition.y : 0,  left : startPosition ? startPosition.x : 0}}
+            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+            PaperProps={{
+              sx: {
+                top: startPosition ? startPosition.y : 0,
+                left: startPosition ? startPosition.x : 0,
+                p: 1,
+                width: 140,
+                '& .MuiMenuItem-root': {
+                  px: 1,
+                  typography: 'body2',
+                  borderRadius: 0.75,
+                },
+              },
+            }}
+          >
+            {props.actions.map((Action, index) => {
+              return (<MenuItem></MenuItem>);
+            })}
+          </Popover>
+        </div>
+      )} */}
     </div>
   );
 }

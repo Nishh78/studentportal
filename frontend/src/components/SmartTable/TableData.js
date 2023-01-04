@@ -3,7 +3,7 @@ import MuiTableCell from "@mui/material/TableCell";
 import { styled } from "@mui/material/styles";
 import React from "react";
 import * as ColumnLayouts from "./ColumnLayouts";
-const TableData = ({ data, header, actions, handleCheckChange }) => {
+const TableData = ({ data, header, actions, handleCheckChange, actionPosition="end" }) => {
   const TableCell = styled(MuiTableCell)(({ theme }) => ({
     border: "none",
     padding: theme.spacing(0.5, 2),
@@ -49,6 +49,21 @@ const TableData = ({ data, header, actions, handleCheckChange }) => {
                 </div>
               </TableCell>
             )}
+            {(actionPosition === 'start' && actions?.length > 0 )&& (
+              <TableCell
+              valign="baseline"
+              style={{
+                display: "flex",
+                justifyContent: "flex-start",
+                alignItems: "center",
+              }}
+            >
+              {actions.map((Action, index) => {
+                return <Action index={index} key={index} data={child} />;
+              })}
+            </TableCell>
+            )}
+
             {header.map((head, headindex) => {
               const renderRow = head.renderRow;
               const data = renderRow ? renderRow(child) : child[head.key];
@@ -82,7 +97,7 @@ const TableData = ({ data, header, actions, handleCheckChange }) => {
                 </>
               );
             })}
-            {actions?.length > 0 && (
+            {(actions?.length > 0 && actionPosition !== 'start' )&& (
               <TableCell
                 valign="baseline"
                 style={{

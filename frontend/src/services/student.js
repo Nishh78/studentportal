@@ -24,6 +24,9 @@ const StudentServices = {
     addStudentResult: (payload) => {
         return apiClient.post("addStudentResult", payload);
     },
+    generateStudentResultPdf: (payload) => {
+        return apiClient.post("generateStudentResultPdf", payload);
+    },
     updateStudentResult: (payload) => {
         return apiClient.put("updateStudentResult", payload);
     },

@@ -24,6 +24,7 @@ import CommonModal from 'src/components/Modals/commonModal';
 import AddCommonAction from 'src/components/Actions/AddAction';
 import { useLoader } from 'src/hooks/useLoader';
 import ViewCommonAction from 'src/components/Actions/ViewCommonAction';
+import ExportCommonAction from 'src/components/Actions/ExportCommonAction';
 
 
 const StudentResult = () => {
@@ -186,8 +187,8 @@ const StudentResult = () => {
     const closeModal = async () => {
         setState(initState);
         setShowAddResultPage({
-            data:null,
-            mode:null,
+            data: null,
+            mode: null,
             show: false,
             _id: null
         });
@@ -229,29 +230,65 @@ const StudentResult = () => {
 
     }
 
+    const handleExport = async (_id) => {
+        try {
+            setLoading(true);
+            const response = await StudentServices.generateStudentResultPdf({_id});
+            if (response.status == 200 && response.data) {
+                window.open(response.data, '_blank')
+            } else {
+                showAlert({
+                    open: true,
+                    message: 'Something went wrong, Please try again!.',
+                    severity: 'error'
+                });
+            }
+        } catch (error) {
+            console.log(error);
+            showAlert({
+                open: true,
+                message: 'Something went wrong, Please try again!.',
+                severity: 'error'
+            });
+        } finally {
+            setLoading(false);
+        }
+    }
 
-    const ViewAction = ({data}) => {
+    const ExportAction = ({ data }) => {
+        if(data.student_result.length == 0) return null;
+        return (
+            <ExportCommonAction onClick={() => handleExport(data._id)} />
+        )
+    }
+
+    const ViewAction = ({ data }) => {
         return (
             <ViewCommonAction onClick={() => setShowAddResultPage({
                 _id: data._id,
-                mode:'view',
+                mode: 'view',
                 data: data.student_result[0],
                 show: true
             })} />
         )
     }
-    const AddAction = ({_id}) => {
+
+    const AddAction = ({ _id }) => {
         return (
             <AddCommonAction
                 title="Add result"
                 onClick={() => setShowAddResultPage({
-                    data:null,
-                    mode:'add',
+                    data: null,
+                    mode: 'add',
                     _id: _id,
                     show: true
                 })}
             />
         )
+    }
+
+    const ActionView = ({ data }) => {
+        return data.student_result.length > 0 ? <ViewAction data={data} /> : <AddAction _id={data._id} />
     }
 
     const DeleteAction = (action) => (
@@ -260,10 +297,10 @@ const StudentResult = () => {
         />
     );
 
-    const rowActions = [];
+    const rowActions = [ActionView, ExportAction];
 
     const tableHeaders = [
-        { title: "Action", key: "action", renderRow: (row) => { return row.student_result.length > 0 ? <ViewAction data={row}/> : <AddAction _id={row._id}/>} },
+        // { title: "Action", key: "action", renderRow: (row) => { return row.student_result.length > 0 ? <ViewAction data={row} /> : <AddAction _id={row._id} /> } },
         { title: "Name", key: "name" },
         { title: "Father Name", key: "fathername" },
         { title: "Mother Name", key: "mothername" },
@@ -274,7 +311,7 @@ const StudentResult = () => {
         { title: "DOB", key: "dob" },
         { title: "Class", key: "class" },
         { title: "Section", key: "section" },
-        { title: "Session", key: "session", renderRow: (row) => {return <span>{row.session ? SESSION_OPTIONS.find(el => el.value == row.session)?.title : '' }</span> } },
+        { title: "Session", key: "session", renderRow: (row) => { return <span>{row.session ? SESSION_OPTIONS.find(el => el.value == row.session)?.title : ''}</span> } },
         { title: "Term", key: "term" },
         { title: "Created Date", key: "createdAt" },
     ];
@@ -285,7 +322,7 @@ const StudentResult = () => {
         <Container>
             <Stack direction="row" alignItems="center" justifyContent="space-between" mb={3}>
                 <Typography variant="h4" gutterBottom>
-                    Students
+                    Student Result
                 </Typography>
             </Stack>
 
@@ -304,13 +341,14 @@ const StudentResult = () => {
             <EnhancedTable
                 tableTitle={'student'}
                 headerComponents={[]}
-                actions={false}
+                actions={rowActions}
+                actionPosition={'start'}
                 tableData={studentList}
                 header={tableHeaders}
                 sortable={true}
                 paginated={true}
-                searchByLabel={"name"}
-                searchByField={['name']}
+                searchByLabel={"Name, Admin No"}
+                searchByField={['name', 'adminNo']}
                 rowsPerPage={5}
             />
 
@@ -334,7 +372,7 @@ const StudentResult = () => {
                     onWatchChange={() => { }}
                     defaultValues={{}}
                 >
-                    <AddResult handleMarksSubmit={handleMarksSubmit} results={showAddResultPage.data} mode={showAddResultPage.mode}/>
+                    <AddResult handleMarksSubmit={handleMarksSubmit} results={showAddResultPage.data} mode={showAddResultPage.mode} />
                 </CommonModal>
             )}
         </Container>

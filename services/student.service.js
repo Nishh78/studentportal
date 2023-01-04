@@ -148,31 +148,30 @@ const generateStudentResultPdf = async (data) => {
                     as: "student_result"
                 }
             },
-            { $match: data }
+            { $match: { _id: new ObjectID(data._id) } }
         ]);
-        console.log('student', student);
-        if (student) {
-            // const html = fs.readFileSync(path.join(__dirname + '/views/studentResult.html'), 'utf-8');
-            // const filename = student.name + student.adminNo + Math.random() + '_result' + '.pdf';
-            // const document = {
-            //     html: html,
-            //     data: {
-            //         products: student
-            //     },
-            //     path: './docs/' + filename
-            // }
-            // pdf.create(document, options)
-            //     .then(res => {
-            //         console.log(res);
-            //     }).catch(error => {
-            //         console.log(error);
-            //     });
-            // const filepath = 'http://localhost:3000/docs/' + filename;
+
+        if (student && student[0]['student_result'].length > 0) {
+            let studentInfo = student[0];
+            const html = fs.readFileSync(path.join(__dirname, '../', '/views/studentResult.html'), 'utf-8');
+            const filename = studentInfo.adminNo + '_result' + '.pdf';
+            const document = {
+                html: html,
+                data: {
+                    student: studentInfo
+                },
+                path: './docs/' + filename
+            }
+
+            const pdfRes = await pdf.create(document, options);
+            var origin = data['origin'];
+            const fileUrl = origin + '/docs/' + filename;
 
             return {
                 status: httpStatus.OK,
-                data: null
+                data: fileUrl
             };
+
         } else {
             return {
                 status: httpStatus.OK,
@@ -180,6 +179,7 @@ const generateStudentResultPdf = async (data) => {
             };
         }
     } catch (error) {
+        console.log(error);
         return {
             status: httpStatus.OK,
             data: null,
