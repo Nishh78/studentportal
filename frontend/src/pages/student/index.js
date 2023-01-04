@@ -56,6 +56,7 @@ const Student = () => {
   });
   const [inchargeOptions, setInchargeOptions] = useState([]);
 
+  console.log('showAddResultPage', showAddResultPage);
 
   const { alert, showAlert, hideAlert } = useToastify();
   const { loading, setLoading } = useLoader();
@@ -288,11 +289,12 @@ const Student = () => {
 
   const handleMarksUpdate = async (payload) => {
     if (showAddResultPage._id) {
-      payload['studentId'] = showAddResultPage._id;
+      payload['_id'] = showAddResultPage._id;
       try {
         setLoading(true);
         const response = await StudentServices.updateStudentResult(payload);
         if (response.status == 200) {
+          fetchData();
           showAlert({
             open: true,
             message: 'Result Updated Successfully.',
@@ -342,14 +344,14 @@ const Student = () => {
     )
   }
 
-  const EditAction = ({ _id }) => {
+  const EditAction = ({ data }) => {
     return (
       <EditCommonAction
         title="Edit result"
         onClick={() => setShowAddResultPage({
-          data: null,
+          data: data.student_result[0],
           mode: 'add',
-          _id: _id,
+          _id: data.student_result[0]._id,
           show: true
         })}
       />
@@ -370,7 +372,7 @@ const Student = () => {
   const rowActions = [];
 
   const tableHeaders = [
-    { title: "Action", key: "action", renderRow: (row) => { return row.student_result.length > 0 ? <EditAction _id={row._id} /> : <></> } },
+    { title: "Action", key: "action", renderRow: (row) => { return row.student_result.length > 0 ? <EditAction data={row} /> : <></> } },
     { title: "Name", key: "name" },
     { title: "Father Name", key: "fathername" },
     { title: "Mother Name", key: "mothername" },

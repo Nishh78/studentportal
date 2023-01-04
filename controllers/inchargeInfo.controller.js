@@ -24,7 +24,6 @@ const update = catchAsync(async (req, res) => {
 });
 
 const remove = catchAsync(async (req, res) => {
-    console.log(req.body);
     const result = await InchargeInfoService.remove(req.body);
     await res.status(result.status).send(result)
 });

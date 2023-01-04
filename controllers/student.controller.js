@@ -24,25 +24,21 @@ const update = catchAsync(async (req, res) => {
 });
 
 const remove = catchAsync(async (req, res) => {
-    console.log(req.body);
     const result = await StudentService.remove(req.body);
     await res.status(result.status).send(result)
 });
 
 const getALlStudentByIncharge = catchAsync(async (req, res) => {
-    console.log(req.query);
     const result = await StudentService.getALlStudentByIncharge(req.query);
     await res.status(result.status).send(result)
 });
 
 const addStudentResult = catchAsync(async (req, res) => {
-    console.log(req.body);
     const result = await StudentService.addStudentResult(req.body);
     await res.status(result.status).send(result)
 });
 
 const updateStudentResult = catchAsync(async (req, res) => {
-    console.log(req.body);
     const result = await StudentService.updateStudentResult(req.body);
     await res.status(result.status).send(result)
 });

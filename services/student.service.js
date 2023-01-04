@@ -18,8 +18,8 @@ const options = {
 
 const getAll = async (data) => {
     if (data && data?.inchargeId) {
-        const incharge = await InchargeInfo.findOne({ inchargeId: data?.inchargeId }, { session: 1, class: 1, section: 1, term: 1, _id:0 }).lean();
-        data = {...incharge};
+        const incharge = await InchargeInfo.findOne({ inchargeId: data?.inchargeId }, { session: 1, class: 1, section: 1, term: 1, _id: 0 }).lean();
+        data = { ...incharge };
     }
     const student = await Student.aggregate([
         {
@@ -109,14 +109,24 @@ const addStudentResult = async (data) => {
 }
 
 const updateStudentResult = async (data) => {
-    const updatestudentResult = await studentResultSchema.findByIdAndUpdate(
-        { studentId: data.studentId },
-        data
-    );
-    return {
-        status: httpStatus.OK,
-        data: updatestudentResult,
-    };
+    const _id = new ObjectID(data._id);
+    delete data['_id'];
+    try {
+        const updatestudentResult = await studentResultSchema.findByIdAndUpdate(
+            _id,
+            data
+        );
+        return {
+            status: httpStatus.OK,
+            data: updatestudentResult
+        };
+    } catch (error) {
+        console.log('error in service', error);
+        return {
+            status: httpStatus.OK,
+            data: null,
+        };
+    }
 }
 
 const getStudentInfo = async (data) => {

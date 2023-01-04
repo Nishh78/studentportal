@@ -108,10 +108,11 @@ const StudentResult = () => {
 
     const onFilterSubmit = async (values) => {
         try {
+            let payload = Object.entries(values).reduce((acc, [k, v]) => v ? { ...acc, [k]: v } : acc, {})
             const loggedInUser = JSON.parse(localStorage.getItem('user'));
             if (loggedInUser && loggedInUser?._id) {
-                values['inchargeId'] = loggedInUser?._id;
-                const response = await StudentServices.getALlStudentByIncharge(values);
+                payload['inchargeId'] = loggedInUser?._id;
+                const response = await StudentServices.getALlStudentByIncharge(payload);
                 if (response.status == 200 && response.data.length > 0) {
                     setstudentList([...response.data]);
                     showAlert({
@@ -198,6 +199,7 @@ const StudentResult = () => {
                 setLoading(true);
                 const response = await StudentServices.addStudentResult(payload);
                 if (response.status == 200) {
+                    fetchData();
                     showAlert({
                         open: true,
                         message: 'Result added Successfully.',
@@ -226,40 +228,6 @@ const StudentResult = () => {
 
     }
 
-    const handleMarksUpdate = async (payload) => {
-        if (showAddResultPage._id) {
-            payload['studentId'] = showAddResultPage._id;
-            try {
-                setLoading(true);
-                const response = await StudentServices.updateStudentResult(payload);
-                if (response.status == 200) {
-                    showAlert({
-                        open: true,
-                        message: 'Result Updated Successfully.',
-                        severity: 'success'
-                    });
-                }
-            } catch (error) {
-                showAlert({
-                    open: true,
-                    message: 'Something went wrong, Please try again!.',
-                    severity: 'error'
-                });
-                console.log(error);
-            } finally {
-                closeModal();
-                setLoading(false);
-            }
-        } else {
-            closeModal();
-            showAlert({
-                open: true,
-                message: 'Something went wrong, Please try again!.',
-                severity: 'error'
-            });
-        }
-
-    }
 
     const ViewAction = ({data}) => {
         return (

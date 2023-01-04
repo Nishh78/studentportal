@@ -92,6 +92,7 @@ const AddResult = ({
     handleMarksSubmit
 }) => {
 
+    console.log('results---', results);
 
     const classes = useStyles();
 
