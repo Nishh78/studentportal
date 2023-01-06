@@ -12,7 +12,7 @@ $ npm install
 ```
 ### `config` environments
 
-MONGO_DB local: mongodb://localhost:27017
+MONGO_DB local: mongodb://localhost:27017/studentportal
 
 MONGO_DB live: mongodb+srv://nishitraval78:li2almnkvgLtElKn@cluster0.qelfprf.mongodb.net/studentportal?retryWrites=true&w=majority
 
@@ -25,7 +25,7 @@ MONGO_DB live: mongodb+srv://nishitraval78:li2almnkvgLtElKn@cluster0.qelfprf.mon
 # development
 $  "start": "nodemon —exec babel-node index.js"
 #  production
-$  "start": "node index.js",
+$  "start": "node index.js"
 $ npm start
 ```
 #### GIT HTTPS ACCESS

@@ -1,6 +1,10 @@
 import { catchAsync } from "../helpers/helper.js";
 import { StudentService } from "../services/index.js";
+import path from "path";
+import { fileURLToPath } from 'url';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const all = catchAsync(async (req, res) => {
     const result = await StudentService.getAll(req.query);
@@ -51,9 +55,14 @@ const getStudentInfo = catchAsync(async (req, res) => {
 
 const generateStudentResultPdf = catchAsync(async (req, res) => {
     console.log(req.body);
-    var origin = req.get('origin');
-    const result = await StudentService.generateStudentResultPdf({...req.body, origin});
-    await res.status(result.status).send(result)
+    const result = await StudentService.generateStudentResultPdf({ ...req.body });
+    if (result.data) {
+        var fullUrl = req.protocol + '://' + req.get('host') + '/docs/' + result.data;
+        await res.status(result.status).send({ ...result, data: fullUrl })
+    } else {
+        await res.status(result.status).send(result)
+    }
+
 });
 
 export default {

@@ -35,6 +35,38 @@ const studentResultSchema = Schema(
         coScholasticArea: coScholasticAreaSchema,
         discipline:disciplineSchema,
         remarkId: { type: String, ref: 'remark' },
+        english: {
+            to_write: String,
+            to_read_identify: String,
+            to_narrate: String,
+            to_recite_poem: String,
+            to_converse: String,
+        },
+        hindi: {
+            to_write: String,
+            to_read_identify: String,
+            to_narrate: String,
+            to_recite_poem: String,
+            to_converse: String,
+        },
+        maths: {
+            to_write: String,
+            recognises_numbers: String
+        },
+        creativeSkills: {
+            recognises_colors: String,
+            drawing_coloring: String,
+            playing_games: String,
+            to_recite_poem: String,
+            dancing: String,
+        },
+        confidence: String,
+        responsibility: String,
+        curiosity: String,
+        obedience: String,
+        concentration: String,
+        social_interaction: String,
+        neatness: String,
         updatedByUser: userObj,
         createdByUser: userObj
     },

@@ -130,7 +130,7 @@
                         text-align: center;
                       "
                     >
-                      Team-I
+                      Term-I
                     </td>
                   </tr>
                 </tbody>
@@ -179,7 +179,7 @@
                       >
                         <span
                           style="border-bottom: 1px solid #000; display: block"
-                        ></span>
+                        >{{student.name}}</span>
                       </td>
                     </tr>
                   </tbody>
@@ -211,7 +211,7 @@
                       >
                         <span
                           style="border-bottom: 1px solid #000; display: block"
-                        ></span>
+                        >{{student.class}} {{student.section}}</span>
                       </td>
                     </tr>
                   </tbody>
@@ -245,7 +245,7 @@
                       >
                         <span
                           style="border-bottom: 1px solid #000; display: block"
-                        ></span>
+                        >{{student.fathername}}</span>
                       </td>
                     </tr>
                   </tbody>
@@ -277,7 +277,7 @@
                       >
                         <span
                           style="border-bottom: 1px solid #000; display: block"
-                        ></span>
+                        >{{student.adminNo}}</span>
                       </td>
                     </tr>
                   </tbody>
@@ -322,78 +322,17 @@
               <th style="text-align: center" ;="">50</th>
               <th></th>
             </tr>
+            {{#each generalMarks}}
             <tr>
-              <th>English</th>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
+              <th>{{this.subject}}</th>
+              <td style="text-align: center" ;="">{{this.periodic_test}}</td>
+              <td style="text-align: center" ;="">{{this.class_test}}</td>
+              <td style="text-align: center" ;="">{{this.subject_activity}}</td>
+              <td style="text-align: center" ;="">{{this.march_exam}}</td>
+              <td style="text-align: center" ;="">{{this.total}}</td>
+              <td style="text-align: center" ;="">{{this.grade}}</td>
             </tr>
-            <tr>
-              <th>Hindi</th>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
-            <tr>
-              <th>Mathematics</th>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
-            <tr>
-              <th>Science</th>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
-            <tr>
-              <th>Social Studies</th>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
-            <tr>
-              <th>Computer</th>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
-            <tr>
-              <th>Punjabi/Sanskrit</th>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
-            <tr>
-              <th>Gen.Knowledge</th>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
+            {{/each}}
             <tr>
               <th>Moral Values</th>
               <td></td>
@@ -420,15 +359,15 @@
             </tr>
             <tr>
               <th>Work Education</th>
-              <th></th>
+              <th>{{coScholasticArea.work_education}}</th>
             </tr>
             <tr>
               <th>Art Education</th>
-              <th></th>
+              <th>{{coScholasticArea.art_education}}</th>
             </tr>
             <tr>
               <th>Health &amp; Physical Education</th>
-              <th></th>
+              <th>{{coScholasticArea.health_education}}</th>
             </tr>
           </tbody>
         </table>
@@ -452,19 +391,19 @@
             </tr>
             <tr>
               <th>Sincerity &amp; Regularity</th>
-              <th></th>
+              <th>{{discipline.sincerity_regularity}}</th>
             </tr>
             <tr>
               <th>Values &amp; Behaviour</th>
-              <th></th>
+              <th>{{discipline.values_behaiour}}</th>
             </tr>
             <tr>
               <th>Tiddiness</th>
-              <th></th>
+              <th>{{discipline.tidiness}}</th>
             </tr>
             <tr>
               <th>Respect for rules &amp; regulations</th>
-              <th></th>
+              <th>{{discipline.rules_regulation}}</th>
             </tr>
           </tbody>
         </table>

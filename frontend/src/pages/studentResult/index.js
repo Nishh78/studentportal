@@ -25,7 +25,7 @@ import AddCommonAction from 'src/components/Actions/AddAction';
 import { useLoader } from 'src/hooks/useLoader';
 import ViewCommonAction from 'src/components/Actions/ViewCommonAction';
 import ExportCommonAction from 'src/components/Actions/ExportCommonAction';
-
+import AddNursaryResult from './addNursaryResult';
 
 const StudentResult = () => {
 
@@ -38,6 +38,7 @@ const StudentResult = () => {
     const [showAddResultPage, setShowAddResultPage] = React.useState({
         data: null,
         mode: null,
+        type: null,
         show: false,
         _id: null
     });
@@ -90,6 +91,7 @@ const StudentResult = () => {
 
     const fetchData = async (payload = {}) => {
         try {
+
             const response = await StudentServices.getAll(payload);
             if (response.status == 200) {
                 setstudentList([...response.data])
@@ -108,6 +110,7 @@ const StudentResult = () => {
     };
 
     const onFilterSubmit = async (values) => {
+        setLoading(true);
         setstudentList([]);
         try {
             let payload = Object.entries(values).reduce((acc, [k, v]) => v ? { ...acc, [k]: v } : acc, {})
@@ -142,6 +145,8 @@ const StudentResult = () => {
         } catch (error) {
             setstudentList([]);
             console.log(error);
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -152,7 +157,7 @@ const StudentResult = () => {
             try {
                 const response = await StudentServices.update(values);
                 if (response.status == 200) {
-                    await fetchData();
+                    // await fetchData();
                     await closeModal();
                 }
             } catch (error) {
@@ -166,7 +171,7 @@ const StudentResult = () => {
         try {
             const response = await StudentServices.delete({ ...state.actionData });
             if (response.status == 200) {
-                await fetchData();
+                // await fetchData();
                 await closeModal();
                 showAlert({
                     open: true,
@@ -189,6 +194,7 @@ const StudentResult = () => {
         setShowAddResultPage({
             data: null,
             mode: null,
+            type: null,
             show: false,
             _id: null
         });
@@ -201,7 +207,7 @@ const StudentResult = () => {
                 setLoading(true);
                 const response = await StudentServices.addStudentResult(payload);
                 if (response.status == 200) {
-                    fetchData();
+                    // fetchData();
                     showAlert({
                         open: true,
                         message: 'Result added Successfully.',
@@ -233,7 +239,7 @@ const StudentResult = () => {
     const handleExport = async (_id) => {
         try {
             setLoading(true);
-            const response = await StudentServices.generateStudentResultPdf({_id});
+            const response = await StudentServices.generateStudentResultPdf({ _id });
             if (response.status == 200 && response.data) {
                 window.open(response.data, '_blank')
             } else {
@@ -256,17 +262,20 @@ const StudentResult = () => {
     }
 
     const ExportAction = ({ data }) => {
-        if(data.student_result.length == 0) return null;
+        if (data.student_result.length == 0) return null;
         return (
             <ExportCommonAction onClick={() => handleExport(data._id)} />
         )
     }
+
+    const NURSARY = ['Pre-Nursery', 'Nursery', 'LKG', 'UKG'];
 
     const ViewAction = ({ data }) => {
         return (
             <ViewCommonAction onClick={() => setShowAddResultPage({
                 _id: data._id,
                 mode: 'view',
+                type: NURSARY.includes(data.class) ? 'NURSARY' : 'NO-NURSARY',
                 data: data.student_result[0],
                 show: true
             })} />
@@ -280,6 +289,7 @@ const StudentResult = () => {
                 onClick={() => setShowAddResultPage({
                     data: null,
                     mode: 'add',
+                    type: NURSARY.includes(data.class) ? 'NURSARY' : 'NO-NURSARY',
                     _id: _id,
                     show: true
                 })}
@@ -297,7 +307,7 @@ const StudentResult = () => {
         />
     );
 
-    const rowActions = [ActionView, ExportAction];
+    const rowActions = [ActionView];
 
     const tableHeaders = [
         // { title: "Action", key: "action", renderRow: (row) => { return row.student_result.length > 0 ? <ViewAction data={row} /> : <AddAction _id={row._id} /> } },
@@ -372,7 +382,11 @@ const StudentResult = () => {
                     onWatchChange={() => { }}
                     defaultValues={{}}
                 >
-                    <AddResult handleMarksSubmit={handleMarksSubmit} results={showAddResultPage.data} mode={showAddResultPage.mode} />
+                    {showAddResultPage?.type == 'NURSARY' ? (
+                        <AddNursaryResult handleMarksSubmit={handleMarksSubmit} results={showAddResultPage.data} mode={showAddResultPage.mode} />
+                    ) : (
+                        <AddResult handleMarksSubmit={handleMarksSubmit} results={showAddResultPage.data} mode={showAddResultPage.mode} />
+                    )}
                 </CommonModal>
             )}
         </Container>

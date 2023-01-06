@@ -39,6 +39,8 @@ import ViewCommonAction from 'src/components/Actions/ViewCommonAction';
 import CommonModal from 'src/components/Modals/commonModal';
 import AddResult from '../studentResult/addResult';
 import InchargeServices from 'src/services/incharge';
+import ExportCommonAction from 'src/components/Actions/ExportCommonAction';
+import AddNursaryResult from '../studentResult/addNursaryResult';
 
 const Student = () => {
 
@@ -51,6 +53,7 @@ const Student = () => {
   const [showAddResultPage, setShowAddResultPage] = React.useState({
     data: null,
     mode: null,
+    type: null,
     show: false,
     _id: null
   });
@@ -167,27 +170,30 @@ const Student = () => {
   ]
 
   const fetchData = async (payload = {}) => {
+    setLoading(true);
     setstudentList([]);
     try {
       const response = await StudentServices.getAll(payload);
       if (response.status == 200 && response.data.length > 0) {
         setstudentList([...response.data]);
         showAlert({
-            open: true,
-            message: 'Record found!',
-            severity: 'success'
+          open: true,
+          message: 'Record found!',
+          severity: 'success'
         });
-    } else {
+      } else {
         setstudentList([]);
         showAlert({
-            open: true,
-            message: 'No record found!',
-            severity: 'error'
+          open: true,
+          message: 'No record found!',
+          severity: 'error'
         });
-    }
+      }
     } catch (error) {
       setstudentList([]);
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -342,20 +348,50 @@ const Student = () => {
     setShowAddResultPage({
       data: null,
       mode: null,
+      type: null,
       show: false,
       _id: null
     });
   };
+
+
+  const NURSARY = ['Pre-Nursery', 'Nursery', 'LKG', 'UKG'];
 
   const ViewAction = ({ data }) => {
     return (
       <ViewCommonAction onClick={() => setShowAddResultPage({
         _id: data._id,
         mode: 'view',
+        type: NURSARY.includes(data.class) ? 'NURSARY' : 'NO-NURSARY',
         data: data.student_result[0],
         show: true
       })} />
     )
+  }
+
+  const handleExport = async (_id) => {
+    try {
+      setLoading(true);
+      const response = await StudentServices.generateStudentResultPdf({ _id });
+      if (response.status == 200 && response.data) {
+        window.open(response.data, '_blank')
+      } else {
+        showAlert({
+          open: true,
+          message: 'Something went wrong, Please try again!.',
+          severity: 'error'
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      showAlert({
+        open: true,
+        message: 'Something went wrong, Please try again!.',
+        severity: 'error'
+      });
+    } finally {
+      setLoading(false);
+    }
   }
 
   const EditAction = ({ data }) => {
@@ -365,6 +401,7 @@ const Student = () => {
         onClick={() => setShowAddResultPage({
           data: data.student_result[0],
           mode: 'add',
+          type: NURSARY.includes(data.class) ? 'NURSARY' : 'NO-NURSARY',
           _id: data.student_result[0]._id,
           show: true
         })}
@@ -372,21 +409,26 @@ const Student = () => {
     )
   }
 
-  const DeleteAction = (action) => (
-    <DeleteCommonAction
-      onClick={() => handleRowActionClick("delete", action.data)}
-    />
-  );
+  const ActionView = ({ data }) => {
+    return data.student_result.length > 0 ? <EditAction data={data} /> : null
+  }
+
+
+  const ExportAction = ({ data }) => {
+    if (data.student_result.length == 0 || NURSARY.includes(data.class)) return null;
+    return (
+      <ExportCommonAction onClick={() => handleExport(data._id)} />
+    )
+  }
 
   useEffect(() => {
     fetchData();
     fetchAllSimpleIncharge();
   }, []);
 
-  const rowActions = [];
+  const rowActions = [ActionView, ExportAction];
 
   const tableHeaders = [
-    { title: "Action", key: "action", renderRow: (row) => { return row.student_result.length > 0 ? <EditAction data={row} /> : <></> } },
     { title: "Name", key: "name" },
     { title: "Father Name", key: "fathername" },
     { title: "Mother Name", key: "mothername" },
@@ -434,7 +476,8 @@ const Student = () => {
       <EnhancedTable
         tableTitle={'student'}
         headerComponents={[]}
-        actions={false}
+        actions={rowActions}
+        actionPosition={'start'}
         tableData={studentList}
         header={tableHeaders}
         sortable={true}
@@ -482,7 +525,12 @@ const Student = () => {
           onWatchChange={() => { }}
           defaultValues={{}}
         >
-          <AddResult handleMarksSubmit={handleMarksUpdate} results={showAddResultPage.data} mode={showAddResultPage.mode} />
+          {showAddResultPage?.type == 'NURSARY' ? (
+            <AddNursaryResult handleMarksSubmit={handleMarksUpdate} results={showAddResultPage.data} mode={showAddResultPage.mode} />
+          ) : (
+            <AddResult handleMarksSubmit={handleMarksUpdate} results={showAddResultPage.data} mode={showAddResultPage.mode} />
+          )}
+
         </CommonModal>
       )}
     </Container>

@@ -11,9 +11,22 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const options = {
-    format: "A3",
+    format: "A4",
     orientation: "portrait",
     border: "10mm"
+}
+
+const GET_GRADE = (mark) => {
+    switch (true) {
+        case mark >= 0 && mark <= 20:
+            return 'C'
+        case mark >= 21 && mark <= 40:
+            return 'B'
+        case mark >= 41 && mark <= 50:
+            return 'A'
+        default:
+            return '-'
+    }
 }
 
 const getAll = async (data) => {
@@ -73,9 +86,9 @@ const remove = async (data) => {
 }
 
 const getALlStudentByIncharge = async (data) => {
-    const isExist = await InchargeInfo.find(data).count();
-    if (isExist > 0) {
-        delete data.inchargeId;
+    const isExist = await InchargeInfo.findOne(data).lean();
+    if (isExist) {
+        const MATCH = { session: isExist.session, class: isExist.class, section: isExist.section, term: isExist.term };
         const student = await Student.aggregate([
             {
                 $lookup: {
@@ -85,7 +98,7 @@ const getALlStudentByIncharge = async (data) => {
                     as: "student_result"
                 }
             },
-            { $match: data }
+            { $match: MATCH }
         ]);
         return {
             status: httpStatus.OK,
@@ -146,30 +159,50 @@ const generateStudentResultPdf = async (data) => {
                     localField: "_id",
                     foreignField: "studentId",
                     as: "student_result"
+                },
+
+            },
+            {
+                $lookup: {
+                    from: "remarks",
+                    localField: "student_results.remarkId",
+                    foreignField: "_id",
+                    as: "remark"
                 }
             },
+
             { $match: { _id: new ObjectID(data._id) } }
         ]);
 
         if (student && student[0]['student_result'].length > 0) {
             let studentInfo = student[0];
+            let generalMarks = studentInfo.student_result[0]['generalMarks'].map(el => {
+                let totalMark = parseInt(el.periodic_test) + parseInt(el.class_test) + parseInt(el.subject_activity) + parseInt(el.march_exam);
+                return {
+                    ...el,
+                    total: totalMark,
+                    grade: GET_GRADE(parseInt(totalMark))
+                }
+            })
+            // console.log(JSON.stringify(studentInfo));
             const html = fs.readFileSync(path.join(__dirname, '../', '/views/studentResult.html'), 'utf-8');
             const filename = studentInfo.adminNo + '_result' + '.pdf';
             const document = {
                 html: html,
                 data: {
-                    student: studentInfo
+                    student: studentInfo,
+                    generalMarks: generalMarks,
+                    coScholasticArea: studentInfo.student_result[0]['coScholasticArea'],
+                    discipline: studentInfo.student_result[0]['discipline'],
                 },
                 path: './docs/' + filename
             }
 
-            const pdfRes = await pdf.create(document, options);
-            var origin = data['origin'];
-            const fileUrl = origin + '/docs/' + filename;
-
+            await pdf.create(document, options);
             return {
                 status: httpStatus.OK,
-                data: fileUrl
+                data: filename,
+                filename: filename
             };
 
         } else {
