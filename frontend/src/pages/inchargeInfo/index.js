@@ -261,7 +261,7 @@ const InchargeInfo = () => {
             {(state.openCommonModal && formData) && (
                 <CommonActionModal
                     formData={formData}
-                    title={'Incharge'}
+                    title={'Incharge Info'}
                     open={["add", "edit"].includes(state.openCommonModal)}
                     onClose={() => closeModal()}
                     mode={state.openCommonModal}

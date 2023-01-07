@@ -6,10 +6,12 @@ import { fileURLToPath } from 'url';
 import mongoose from "mongoose";
 import router from "./routes/route.js";
 const app = express();
-
+console.log('env', process.env.MONGO_DB);
 mongoose.set('strictQuery', false);
+const MONGO_DB = "mongodb://localhost:27017/studentportal2";
 // DB connection
-mongoose.connect(`${process.env.MONGO_DB}`, { useNewUrlParser: true, useUnifiedTopology: true }).then(() => {
+mongoose.connect(`${MONGO_DB}`, { useNewUrlParser: true, useUnifiedTopology: true }).then((response) => {
+	console.log('response', response);
 	//don't show the log when it is test
 	if (process.env.NODE_ENV !== "test") {
 		console.log("Connected");
