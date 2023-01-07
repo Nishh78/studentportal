@@ -282,7 +282,7 @@ const StudentResult = () => {
         )
     }
 
-    const AddAction = ({ _id }) => {
+    const AddAction = ({data}) => {
         return (
             <AddCommonAction
                 title="Add result"
@@ -290,7 +290,7 @@ const StudentResult = () => {
                     data: null,
                     mode: 'add',
                     type: NURSARY.includes(data.class) ? 'NURSARY' : 'NO-NURSARY',
-                    _id: _id,
+                    _id: data._id,
                     show: true
                 })}
             />
@@ -298,7 +298,7 @@ const StudentResult = () => {
     }
 
     const ActionView = ({ data }) => {
-        return data.student_result.length > 0 ? <ViewAction data={data} /> : <AddAction _id={data._id} />
+        return data.student_result.length > 0 ? <ViewAction data={data} /> : <AddAction data={data} />
     }
 
     const DeleteAction = (action) => (
